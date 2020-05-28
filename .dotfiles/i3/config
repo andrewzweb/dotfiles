@@ -1,0 +1,298 @@
+  
+set $mod Mod4
+
+font pango: System San Francisco Display 13
+
+floating_modifier $mod
+
+# start a terminal
+bindsym $mod+Return exec konsole
+bindsym Mod1+shift+e exec emacs
+bindsym Mod1+shift+f exec firefox
+
+# kill focused window
+bindsym $mod+Shift+q kill
+bindsym $mod+q       kill
+
+# start dmenu (a program launcher)
+# bindsym $mod+d exec dmenu_run
+bindsym Mod1+space exec "dmenu_run -b -nf '#F3F4F5' -nb '#2F343F' -sb '#1793D1' -sf '#f3f4f5' -fn 'Droid Sans 16' -p 'run: '"
+
+# start rofi (dmenu mode)
+bindsym $mod+z exec i3-dmenu-desktop --dmenu='rofi -dmenu -i -lines 8 -eh 1 -width 40 -padding 20 -columns 1 -opacity "85" -font "Droid Sans 16"'   
+
+# start rofi (window mode)
+bindsym Mod1+Tab exec rofi -show window -i -lines 10 -eh 1 -width 50 -padding 20 -opacity "85" -font "Droid Sans 16"
+
+bindsym $mod+d exec rofi -show run -i -lines 10 -eh 1 -width 50 -padding 20 -opacity "85" -font "Droid Sans 16"
+
+
+# change focus
+bindsym $mod+j focus left
+bindsym $mod+k focus down
+bindsym $mod+l focus up
+bindsym $mod+semicolon focus right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# move focused window
+bindsym $mod+Shift+j move left
+bindsym $mod+Shift+k move down
+bindsym $mod+Shift+l move up
+bindsym $mod+Shift+semicolon move right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# split in horizontal orientation
+bindsym $mod+h split h
+
+# split in vertical orientation
+bindsym $mod+v split v
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# focus the parent container
+bindsym $mod+a focus parent
+
+# focus the child container
+#bindsym $mod+d focus child
+
+# Define names for default workspaces for which we configure key bindings later on.
+# We use variables to avoid repeating the names in multiple places.
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+# switch to workspace
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace $ws6
+bindsym $mod+7 workspace $ws7
+bindsym $mod+8 workspace $ws8
+bindsym $mod+9 workspace $ws9
+bindsym $mod+0 workspace $ws10
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace $ws6
+bindsym $mod+Shift+7 move container to workspace $ws7
+bindsym $mod+Shift+8 move container to workspace $ws8
+bindsym $mod+Shift+9 move container to workspace $ws9
+bindsym $mod+Shift+0 move container to workspace $ws10
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
+# exit i3 (logs you out of your X session)
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+
+# resize window (you can also use the mouse for that)
+mode "resize" {
+        # These bindings trigger as soon as you enter the resize mode
+
+        # Pressing left will shrink the window’s width.
+        # Pressing right will grow the window’s width.
+        # Pressing up will shrink the window’s height.
+        # Pressing down will grow the window’s height.
+        bindsym j resize shrink width 10 px or 10 ppt
+        bindsym k resize grow height 10 px or 10 ppt
+        bindsym l resize shrink height 10 px or 10 ppt
+        bindsym semicolon resize grow width 10 px or 10 ppt
+
+        # same bindings, but for the arrow keys
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        # back to normal: Enter or Escape or $mod+r
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+
+bindsym $mod+r mode "resize"
+
+# Manually set colors
+# define colors used
+set $bg-color 	         #2f343f
+set $inactive-bg-color   #2f343f
+set $text-color          #f3f4f5
+set $inactive-text-color #676E7D
+set $urgent-bg-color     #5294e2
+set $white-color         #ffffff
+
+client.focused          $white-color $white-color #FFFFFF $white-color 
+client.focused_inactive #2f343f #2f343f #FFFFFF #2f343f
+client.unfocused        #2f343f #2f343f #FFFFFF #2f343f
+client.urgent           #2f343f #2f343f #ffffff #2f343f
+client.placeholder      #2f343f #2f343f #ffffff #2f343f
+
+# windows starting in floating mode
+for_window [title="File Transfer*"] floating enable
+for_window [class="Lightdm-gtk-greeter-settings"] floating enable
+#for_window [class="Spotify"] floating enable
+for_window [class="Transmission"] floating enable 
+for_window [class="Lxappearance"] floating enable 
+for_window [class="Xfce4-taskmanager"] floating enable 
+for_window [class="Gnome-system-monitor"] floating enable 
+for_window [class="Simplescreenrecorder"] floating enable 
+for_window [class="Xsensors"] floating enable
+for_window [class="Nitrogen"] floating enable
+#for_window [class="Mainwindow.py"] floating enable 
+for_window [class="etcher"] floating enable 
+for_window [class="Galculator"] floating enable 
+for_window [class="Audacious"] floating enable 
+for_window [class="Nautilus"] floating enable
+for_window [class="Thunar"] floating enable
+for_window [class="Org.gnome.Weather.Application"] floating enable
+#for_window [class="Photoshop.exe"] floating enable 
+for_window [class="(?i)virtualbox"] floating enable 
+for_window [class="milkytracker"] floating enable
+for_window [class="Arandr"] floating enable
+for_window [class="Pamac-manager"] floating enable
+for_window [class="minergate"] floating enable 
+for_window [class="Xarchiver"] floating enable
+for_window [class="Gzdoom"] floating enable 
+for_window [title="alsamixer"] floating enable border pixel 1
+for_window [class="FS-UAE Launcher 2.8.3 (Not logged in)"] floating enable
+for_window [class="Nm-connection-editor"] floating enable 
+for_window [class="MPlayer"] floating enable
+for_window [class="mpv"] floating enable 
+for_window [title="dosbox"] floating enable
+
+
+# media player controls
+bindsym XF86AudioPlay exec  mpc toggle
+bindsym XF86AudioPause exec mpc pause
+bindsym XF86AudioNext exec  mpc next
+bindsym XF86AudioPrev exec  mpc prev
+
+# volume control
+bindsym XF86AudioRaiseVolume exec amixer -q set Master 2%+ unmute
+bindsym XF86AudioLowerVolume exec amixer -q set Master 2%- unmute
+bindsym XF86AudioMute exec amixer -q set Master toggle
+
+# screenshot
+bindsym Print exec scrot $HOME/images/screenshots/`date +%Y-%m-%d_%H:%M:%S`.png
+bindsym Mod1+Print exec scrot -u $HOME/images/screenshots/`date +%Y-%m-%d_%H:%M:%S`.png
+bindsym Mod1+Shift+Print exec scrot -s $HOME/images/screenshots/`date +%Y-%m-%d_%H:%M:%S`.png
+
+# window style
+new_window pixel 3
+new_float normal 3
+hide_edge_borders none
+
+# shut down, restart and locking features
+bindsym $mod+shift+delete exec sh ~/.config/i3/scripts/rofi-computer.sh
+bindsym $mod+shift+x exec betterlockscreen -l dimblur
+
+#bindsym $mod+shift+space exec rofi -show run
+
+# i3 gaps
+for_window [class="^.*"] border pixel 1
+gaps inner 10
+gaps outer 0
+#smart_gaps on
+#smart_borders 
+
+bindsym $mod+g          gaps inner current plus 5 
+bindsym $mod+Shift+g    gaps inner current minus 5 
+
+bindsym $mod+F1 [class="^TelegramDesktop$"] scratchpad show
+bindsym $mod+F2 [class="^Keepassx::"] scratchpad show
+bindsym $mod+minus scratchpad show
+
+
+# auto start apps
+
+#bar {     
+#	status_command    i3status
+#    position          bottom
+#}
+ 
+exec_always --no-startup-id ~/.config/polybar/launch.sh
+exec --no-startup-id nitrogen --restore; sleep 1;
+exec_always --no-startup-id nm-appet
+exec --no-startup-id compton --config ~/.config/i3/compton.conf -b
+exec_always --no-startup-id mpd
+exec --no-startup-id nm-applet 
+exec --no-startup-id blueman-applet
+#exec --no-startup-id xautolock -time 30 -locker "betterlockscreen -l dimblur"
+exec_always --no-startup-id setxkbmap -option 'ctrl:nocaps,shift:both_capslock_cancel'
+exec_always --no-startup-id setxkbmap "us,ru" ",winkeys" "grp:rctrl_rshift_toggle"
+
+
+#   ┌───────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+#   │Option                      Description                                                                    │
+#   ├───────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+#   │grp:switch                  Right Alt (while pressed)                                                      │
+#   │grp:lswitch                 Left Alt (while pressed)                                                       │
+#   │grp:lwin_switch             Left Win (while pressed)                                                       │
+#   │grp:rwin_switch             Right Win (while pressed)                                                      │
+#   │grp:win_switch              Any Win key (while pressed)                                                    │
+#   │grp:caps_switch             Caps Lock (while pressed), Alt+Caps Lock does the original capslock action     │
+#   │grp:rctrl_switch            Right Ctrl (while pressed)                                                     │
+#   │grp:toggle                  Right Alt                                                                      │
+#   │grp:lalt_toggle             Left Alt                                                                       │
+#   │grp:caps_toggle             Caps Lock                                                                      │
+#   │grp:shift_caps_toggle       Shift+Caps Lock                                                                │
+#   │grp:shift_caps_switch       Caps Lock (to first layout), Shift+Caps Lock (to last layout)                  │
+#   │grp:win_menu_switch         Left Win (to first layout), Right Win/Menu (to last layout)                    │
+#   │grp:lctrl_rctrl_switch      Left Ctrl (to first layout), Right Ctrl (to last layout)                       │
+#   │grp:alt_caps_toggle         Alt+Caps Lock                                                                  │
+#   │grp:shifts_toggle           Both Shift keys together                                                       │
+#   │grp:alts_toggle             Both Alt keys together                                                         │
+#   │grp:ctrls_toggle            Both Ctrl keys together                                                        │
+#   │grp:ctrl_shift_toggle       Ctrl+Shift                                                                     │
+#   │grp:lctrl_lshift_toggle     Left Ctrl+Left Shift                                                           │
+#   │grp:rctrl_rshift_toggle     Right Ctrl+Right Shift                                                         │
+#   │grp:ctrl_alt_toggle         Alt+Ctrl                                                                       │
+#   │grp:alt_shift_toggle        Alt+Shift                                                                      │
+#   │grp:lalt_lshift_toggle      Left Alt+Left Shift                                                            │
+#   │grp:alt_space_toggle        Alt+Space                                                                      │
+#   │grp:menu_toggle             Menu                                                                           │
+#   │grp:lwin_toggle             Left Win                                                                       │
+#   │grp:rwin_toggle             Right Win                                                                      │
+#   │grp:lshift_toggle           Left Shift                                                                     │
+#   │grp:rshift_toggle           Right Shift                                                                    │
+#   │grp:lctrl_toggle            Left Ctrl                                                                      │
+#   │grp:rctrl_toggle            Right Ctrl                                                                     │
+#   │grp:sclk_toggle             Scroll Lock                                                                    │
+#   │grp:lctrl_lwin_rctrl_menu   LeftCtrl+LeftWin (to first layout), RightCtrl+Menu (to second layout)          │
+
