@@ -1,0 +1,132 @@
+ 
+* TODO Install all in my laptop
+  :PROPERTIES:
+  :CREATED:  [2020-05-29 Fri 23:24]
+  :ID:       ba9e0187-9ff9-41c4-8ef7-bca371bd1975
+  :END:
+
+All scripts run from this file 
+
+#+BEGIN_SRC sh :tangle 0_update_manjaro.sh
+# Run install all I need
+
+echo '[+] RUN';
+sudo chmod +x 1_update_pacman.sh 2_install_yaourt.sh 3_install_packages.sh 4_settings.sh;
+./1_update_pacman.sh;
+./2_install_yaourt.sh;
+./3_install_packages.sh;
+./4_settings.sh;
+echo '[+] DONE';
+#+END_SRC
+
+
+** TODO Step 1: Update pacman
+   :PROPERTIES:
+   :ID:       cfe4ee82-dacd-4d28-91c2-f3c41a5af0b7
+   :END:
+
+#+BEGIN_SRC sh :tangle 1_update_pacman.sh
+# Update pacman 
+
+# check fast mirrors 
+sudo pacman-mirrors --fasttrack; 
+# update db
+yes |sudo pacman -Syy; 
+#+END_SRC
+
+** TODO Step 2: Install Yaourt
+   :PROPERTIES:
+   :ID:       96427d53-5cbb-42c8-9e49-4cb3932ad1ab
+   :END:
+
+#+BEGIN_SRC sh :tangle 2_install_yaourt.sh
+# Installing yaourt 
+
+echo '[>] Start instal yaourt';
+
+# download required packages 
+echo -ne '\n Y \n' | sudo pacman -S base-devel git wget yajl;
+cd /tmp;
+git clone https://aur.archlinux.org/package-query.git;
+cd package-query/;
+yes | makepkg -si && cd /tmp/;
+git clone https://aur.archlinux.org/yaourt.git;
+cd yaourt/;
+yes | makepkg -si;
+
+echo '[+] End install yaourt';
+#+END_SRC
+
+** TODO Step 3: Install packages  
+   :PROPERTIES:
+   :ID:       4d342f73-ae70-4cff-b92c-bf19e47b6fda
+   :END:
+
+#+BEGIN_SRC sh :tangle 3_install_packages.sh
+echo '[>] Start instal packages';
+
+# firewall  
+yes | sudo pacman -S gufw;
+
+# for my cloud 
+yes | yaourt -S nextcloud-client;
+
+# for backup
+yes | sudo pacman -S timeshift;
+
+# money accounting 
+yes | sudo pacman -S ledger;
+
+# desktop Enviroment
+yes | sudo pacman -S vlc;
+yes | sudo pacman -S latte-dock;
+yes | sudo pacman -S gparted;
+yes | sudo pacman -S filelight;
+yes | sudo pacman -S qbittorent;
+yes | sudo pacman -S clementine;
+# yes | yaourt -S keepass2; # don't work 
+yes | yaourt -S telegram-desktop; # don't work 
+
+# terminal tools 
+yes | yaourt -S glances;
+yes | sudo pacman -S keepass2;
+yes | sudo pacman -S tree;
+yes | sudo pacman -S neofetch;
+yes | sudo pacman -S gnupg;
+yes | sudo pacman -S zsh;
+yes | sudo pacman -S hub;
+yes | sudo pacman -S mosh;
+
+# texteditor
+yes | sudo pacman -S emacs;
+
+# browsers
+yes | sudo pacman -S chromium;
+yes | sudo pacman -S firefox;
+#echo 'n' | yaourt -S google-chrome; # don't work 
+
+# work with image
+yes | sudo pacman -S gimp;
+yes | sudo pacman -S krita;
+
+# other
+yes | sudo pacman -S anki;
+
+# for touchpad thinkpad t440p
+yes | sudo pacman -S xorg-xinput;
+
+echo '[+] End install packages';
+#+END_SRC
+
+
+** TODO Step 4: settings  
+   :PROPERTIES:
+   :ID:       6c6c2db0-dfc5-48f1-ad28-a6540af0a940
+   :END:
+
+#+BEGIN_SRC sh :tangle 4_settings.sh
+# for speed use SSD  
+sudo systemctl enable fstrim.timer
+sudo systemctl start fstrim.timer 
+#+END_SRC
+
