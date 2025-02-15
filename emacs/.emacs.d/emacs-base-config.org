@@ -38,6 +38,18 @@
 (setq auto-save-default nil)
 #+END_SRC
 
+** Theme
+:PROPERTIES:
+:ID:       98998ce9-5a8c-45f4-9079-7190124a0f28
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package dracula-theme
+  :ensure t
+  :config
+  (load-theme 'dracula t))
+#+END_SRC
+
 ** macOS-Specific Settings
 :PROPERTIES:
 :ID:       697fe8ea-f595-4596-af9a-59933008b49a

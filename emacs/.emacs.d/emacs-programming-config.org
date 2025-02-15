@@ -36,7 +36,7 @@
   (setq flycheck-indication-mode 'right-fringe))
 #+END_SRC
 
-*** company and lsp
+*** Company-mode and LSP (server)
 :PROPERTIES:
 :ID:       d73f9706-2193-4b09-9925-8ba517935473
 :END:
@@ -95,19 +95,24 @@
 
 #+BEGIN_SRC emacs-lisp
 ;; Optionally use lsp-ui for fancy UI integrations (popups for function signatures, peek, etc.)
+;; Optionally use lsp-ui for fancy UI integrations (popups for function signatures, peek, etc.)
 (use-package lsp-ui
   :ensure t
   :after lsp-mode
   :commands lsp-ui-mode
   :hook (lsp-mode . lsp-ui-mode)
-  :bind (:map lsp-mode-map
-          ("C-c d" . lsp-ui-doc-show))
+  :bind (("C-c d" . lsp-ui-doc-show)        ; Show doc window
+         ("C-c D" . lsp-ui-doc-hide)        ; Hide doc window
+         ("M-?" . lsp-ui-doc-glance)        ; Temporarily show doc
+         :map lsp-mode-map
+         ("C-c d" . lsp-ui-doc-show))       ; This line can be removed if already covered
+
   :config
   ;; Enable the documentation pop-up
   (setq lsp-ui-doc-enable t
-        ; Don't show doc on cursor hover
+        ;; Don't show doc on cursor hover
         lsp-ui-doc-show-with-cursor nil
-        ; Show doc on mouse hover
+        ;; Show doc on mouse hover
         lsp-ui-doc-show-with-mouse t
 
         ;; Position the documentation frame at point
@@ -125,12 +130,7 @@
         lsp-ui-doc-border "#c678dd"
         ;; Use a custom font for the documentation frame
         lsp-ui-doc-font '("Source Code Pro" . 12))
-    :bind
-    (:map lsp-ui-mode-map
-        ("C-c d" . lsp-ui-doc-show)        ; Show doc window
-        ("C-c D" . lsp-ui-doc-hide)        ; Hide doc window
-        ("M-?" . lsp-ui-doc-glance))      ; Temporarily show doc
-  
+
   ;; Customize the sideline diagnostics
   (setq lsp-ui-sideline-enable t
         lsp-ui-sideline-show-hover t
@@ -245,7 +245,7 @@ Docs: https://github.com/yasuyk/web-beautify
 
 #+END_SRC
 
-*** Rainbow-mode
+*** Rainbow-Mode
 :PROPERTIES:
 :ID:       1b96e88f-b261-4303-a47c-e88d23731807
 :END:
@@ -283,6 +283,9 @@ make brackets colorfull
   (set-face-foreground 'rainbow-delimiters-depth-9-face "#5C6370"))
 #+END_SRC
 
+
+#+RESULTS:
+
 *** Multiple Cursors
 :PROPERTIES:
 :ID:       73e6166a-c123-4411-aa32-899ae72e021a
@@ -313,6 +316,11 @@ Docs: https://github.com/magnars/multiple-cursors.el/issues/105
 :ID:       463f226d-2e5a-4a5b-9b84-4a8a952f9e0d
 :END:
 
+**** Install and configure Web Mode
+:PROPERTIES:
+:ID:       7893c9d7-3e47-47db-88a3-c23de4138ec1
+:END:
+
 #+BEGIN_SRC emacs-lisp
 (use-package web-mode
   :ensure t
@@ -331,9 +339,14 @@ Docs: https://github.com/magnars/multiple-cursors.el/issues/105
 )
 #+END_SRC
 
-*** Emmet Mode
+*** Emmet-Mode
 :PROPERTIES:
 :ID:       305ba2b4-881d-4a39-a6cd-d69e2f7f1da5
+:END:
+
+**** Install and configure Emmet Mode
+:PROPERTIES:
+:ID:       5e86e8a3-10c2-4c2d-9512-baef5c0dd27f
 :END:
 
 #+BEGIN_SRC emacs-lisp
@@ -363,9 +376,14 @@ Docs: https://github.com/magnars/multiple-cursors.el/issues/105
   (add-hook 'vue-mode-hook 'company-mode))
 #+END_SRC
 
-*** React-mode
+*** React-Mode
 :PROPERTIES:
 :ID:       a85c71b5-6f9a-47df-9f29-6b4fc2f3b60c
+:END:
+
+**** Install and configure React mode
+:PROPERTIES:
+:ID:       0198a31f-bf7e-450d-bfd0-74f9f9fe45b1
 :END:
 
 #+BEGIN_SRC emacs-lisp
@@ -376,6 +394,11 @@ Docs: https://github.com/magnars/multiple-cursors.el/issues/105
 *** Prettier
 :PROPERTIES:
 :ID:       e93b6229-2212-4375-8624-ae4402f25fe2
+:END:
+
+**** Install and configure Prettier
+:PROPERTIES:
+:ID:       c8c8f181-5f16-40a2-a1b5-75a1283fd7f4
 :END:
 
 #+BEGIN_SRC emacs-lisp
@@ -444,9 +467,9 @@ Docs: https://github.com/magnars/multiple-cursors.el/issues/105
 
 and in ~/HOME_DIR/.pylintrc
 
-https://github.com/adafruit/Adafruit_Learning_System_Guides/blob/master/.pylintrc 
+https://github.com/adafruit/Adafruit_Learning_System_Guides/blob/master/.pylintrc
 
-example 
+example
 
 #+BEGIN_SRC sh
 [MESSAGES CONTROL]
@@ -461,7 +484,7 @@ evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / stateme
 :ID:       f8c93462-40a9-4d4f-9847-467d4190ce76
 :END:
 
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
 (use-package pytest
     :ensure t
     :bind ("C-c t" . pytest-all)
@@ -508,6 +531,7 @@ https://github.com/porterjamesj/virtualenvwrapper.el
   (venv-initialize-interactive-shells)
   (venv-initialize-eshell))
 
+
 (add-hook 'venv-postmkvirtualenv-hook
           (lambda () (shell-command "pip install pytest pylint flake8 jedi elpy python-coverage>=4.0")))
 #+END_SRC
@@ -523,7 +547,7 @@ https://github.com/porterjamesj/virtualenvwrapper.el
   :mode ("\\.py\\'" . python-mode)
   :interpreter ("python" . python-mode)
   :config
-  (setq python-shell-interpreter "~/.virtualenv/3.10/bin/python")
+  (setq python-shell-interpreter "~/.virtualenv/3.11/bin/python")
   :config
   (add-hook 'python-mode-hook 'company-mode)
 )
@@ -539,6 +563,11 @@ https://github.com/porterjamesj/virtualenvwrapper.el
 :ID:       46c3cc0c-cd33-4fe9-b83d-1d3495d3f5b9
 :END:
 
+**** Install and configure Markdown mode
+:PROPERTIES:
+:ID:       6793a6b1-2b46-4b3a-bf62-ba85d7a45995
+:END:
+
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
   :ensure t
@@ -546,17 +575,16 @@ https://github.com/porterjamesj/virtualenvwrapper.el
          ("\\.md\\'"       . markdown-mode)))
 #+END_SRC
 
-*** GPTel
+*** GPT
 :PROPERTIES:
-:ID:       5f55fcce-775a-404e-b89b-eac287b14077
+:ID:       4c92ce9d-0b20-4911-90a3-e1123a81a4c0
 :END:
 
 #+BEGIN_SRC emacs-lisp
 (use-package gptel
   :ensure t
   :config
-  ;; Retrieve the API key from the system environment
-  (setq gptel-api-key (getenv "GPTEL_API_KEY")) ;; Replace "GPTEL_API_KEY" with your actual environment variable name
+  (setq gptel-api-key "sk")
   (setq gptel-model "gpt-4o")
   )
 
@@ -578,9 +606,103 @@ https://github.com/porterjamesj/virtualenvwrapper.el
 (global-set-key (kbd "C-c C-m") 'gptel-menu)
 #+END_SRC
 
-*** Doom-modeline
+
+* Calendar
 :PROPERTIES:
-:ID:       96dfd3cc-05d4-452e-9b8d-c929e23df55f
+:CREATED:  [2024-03-10 нд 14:41]
+:ID:       5b259933-82b4-48a4-b5fb-43a719e0303c
+:END:
+
+#+BEGIN_SRC emacs-lisp
+;; Docs -- https://github.com/kiwanami/emacs-calfw?tab=readme-ov-file#cfwmodel
+(use-package calfw
+  :ensure t
+  :config
+  (require 'calfw-org))
+
+(use-package calfw-org
+  :ensure t
+  :config
+  (setq cfw:org-overwrite-default-keybinding t)
+  (setq cfw:org-agenda-schedule-args '(:scheduled :deadline :timestamp))
+)
+
+;; First day of the week
+(setq calendar-week-start-day 1) ; 0:Sunday, 1:Monday
+
+;; set hight of day by default
+;(cfw:create-calendar-component-region :height 10)
+
+;; styles
+(custom-set-faces
+ '(cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
+ '(cfw:face-header ((t (:foreground "#d0bf8f" :weight bold))))
+ '(cfw:face-sunday ((t :foreground "#cc9393" :background "grey10" :weight bold)))
+ '(cfw:face-saturday ((t :foreground "#8cd0d3" :background "grey10" :weight bold)))
+ '(cfw:face-holiday ((t :background "grey10" :foreground "#8c5353" :weight bold)))
+ '(cfw:face-grid ((t :foreground "DarkGrey")))
+ '(cfw:face-default-content ((t :foreground "#bfebbf")))
+ '(cfw:face-periods ((t :foreground "cyan")))
+ '(cfw:face-day-title ((t :background "grey10")))
+ '(cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
+ '(cfw:face-annotation ((t :foreground "RosyBrown" :inherit cfw:face-day-title)))
+ '(cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
+ '(cfw:face-today-title ((t :background "#7f9f7f" :weight bold)))
+ '(cfw:face-today ((t :background: "grey10" :weight bold)))
+ '(cfw:face-select ((t :background "#2f2f2f")))
+ '(cfw:face-toolbar ((t :foreground "Steelblue4" :background "Steelblue4")))
+ '(cfw:face-toolbar-button-off ((t :foreground "Gray10" :weight bold)))
+ '(cfw:face-toolbar-button-on ((t :foreground "Gray50" :weight bold))))
+
+(defun my-open-calendar ()
+  "Open the calendar view with org-agenda."
+  (cfw:open-org-calendar))
+
+;; open calendar
+(defun toggle-calendar ()
+  "Toggle the calendar window."
+  (if (get-buffer "*cfw-calendar*")
+      (kill-buffer "*cfw-calendar*")
+    (my-open-calendar)))
+
+(global-set-key (kbd "C-c t") 'toggle-calendar)  ; Add another keybinding to toggle
+#+END_SRC
+
+
+* Org-timeblock
+:PROPERTIES:
+:ID:       3d2289b4-9dea-4b6e-b23e-243a214657a5
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-timeblock
+  :ensure t
+  :bind ("C-c s" . org-timeblock)
+  :config
+  (setq org-timeblock-files (directory-files-recursively "/home/andrew/workspace/org/workspace/" "\\.org$"))
+  (setq org-timeblock-inbox-file "/home/andrew/workspace/org/workspace/inbox.org")
+)
+
+(setq org-tag-faces
+      '(("english" . (:foreground "#FFB6C1" :weight bold)) ; Soft pink
+        ("newtend" . (:foreground "#90EE90" :weight bold)) ; Light green
+        ("proxyua" . (:foreground "#00FA9A" :weight bold)))) ; Green with aqua (Medium Spring Green)
+#+END_SRC
+
+#+RESULTS:
+| english | :foreground | #FFB6C1 | :weight | bold |
+| newtend | :foreground | #90EE90 | :weight | bold |
+| proxyua | :foreground | #00FA9A | :weight | bold |
+
+
+
+
+#+RESULTS:
+: vertico-directory-delete-word
+
+* Doom-modeline
+:PROPERTIES:
+:ID:       56361aea-210d-4ce3-a92f-8694a5469191
 :END:
 
 #+BEGIN_SRC emacs-lisp
@@ -597,9 +719,12 @@ https://github.com/porterjamesj/virtualenvwrapper.el
   (setq doom-modeline-buffer-file-name-style 'truncate-upto-project))
 #+END_SRC
 
-*** All Icons
+#+RESULTS:
+: t
+
+* All the icons
 :PROPERTIES:
-:ID:       96cfdec0-a79c-4f4a-91ca-6e320419408f
+:ID:       6c931383-b746-4575-b404-f46e04ba0951
 :END:
 
 #+BEGIN_SRC emacs-lisp
@@ -611,56 +736,6 @@ https://github.com/porterjamesj/virtualenvwrapper.el
 (global-font-lock-mode 1)
 #+END_SRC
 
-*** Add Emoji
-:PROPERTIES:
-:ID:       546a77d4-8dc8-4323-815a-f4590333ee34
-:END:
+#+RESULTS:
+: t
 
-#+BEGIN_SRC emacs-lisp
-;; Main emoji package
-(use-package emojify
-  :ensure t
-  :hook (after-init . global-emojify-mode)
-  :config
-  ;; Set proper emoji font
-  (when (member "Segoe UI Emoji" (font-family-list))
-    (set-fontset-font t 'symbol (font-spec :family "Segoe UI Emoji") nil 'prepend))
-
-  ;; Display settings
-  (setq emojify-display-style 'unicode)
-  (setq emojify-emoji-styles '(unicode))
-
-  ;; Enable emoji in buffer
-  (add-hook 'after-init-hook #'global-emojify-mode)
-
-  :bind
-  (("C-c i" . emojify-insert-emoji)    ; Insert emoji
-   ("C-c E" . emojify-apropos-emoji))) ; Search emoji
-#+END_SRC
-
-*** Aider
-:PROPERTIES:
-:ID:       1b27f4b7-e345-4dfb-962b-0457511df785
-:END:
-
-*Install*
-
-#+BEGIN_SRC emacs-lisp
-;; (package-vc-install '(aider :url "https://github.com/tninja/aider.el"))
-;; (package! aider :recipe (:host github :repo "tninja/aider.el" :files ("aider.el" "aider-doom.el")))
-#+END_SRC
-
-*Usage*
-
-#+BEGIN_SRC emacs-lisp
-(use-package aider
-  :config
-  (setq aider-args '("--model" "mini"))
-  ;; Bind the transient menu to C-c f
-
-  ;; Optional: You can define other models by uncommenting and configuring
-  ;; (setenv "OPENAI_API_KEY" "sk-...")
-  (setq aider-args `("--config" ,(expand-file-name "~/.aider.conf.yml")))
-  (global-set-key (kbd "C-c f") 'aider-transient-menu)
-)
-#+END_SRC
