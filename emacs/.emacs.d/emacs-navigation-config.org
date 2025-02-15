@@ -1,0 +1,145 @@
+* Navigation Configuration
+:PROPERTIES:
+:ID:       883059e0-6045-40d6-98b7-8fffd95cfdcd
+:END:
+
+Navigation-related settings and packages to improve buffer navigation, command execution, and window management.
+
+** IDO Mode (Interactive Do)
+:PROPERTIES:
+:ID: 650f99da-d613-452d-8fbf-6ce2af0de14e
+:END:
+
+Provides a more efficient and dynamic way to select buffers and files.
+
+#+BEGIN_SRC emacs-lisp
+(setq ido-enable-flex-matching t)  ;; Enable flexible matching for Ido
+(setq ido-everywhere t)            ;; Use Ido mode globally
+(setq ido-create-new-buffer 'always) ;; Always create new buffers
+(ido-mode 1)                        ;; Enable Ido mode
+#+END_SRC
+
+** ErgoEmacs Mode
+:PROPERTIES:
+:ID: 2c326a69-6014-4b5f-a77d-59558ff1cabb
+:END:
+
+ErgoEmacs replaces standard Emacs keybindings with more ergonomic alternatives.
+
+#+BEGIN_SRC emacs-lisp
+(use-package ergoemacs-mode
+  :ensure t
+  :config
+  (ergoemacs-mode 1))
+#+END_SRC
+
+** Smex (Improved M-x)
+:PROPERTIES:
+:ID: 7c4ecd35-84d1-4faa-9fd3-a47701df5b78
+:END:
+
+Smex enhances `M-x` by adding command history and suggestions.
+
+#+BEGIN_SRC emacs-lisp
+(use-package smex
+  :ensure t)
+
+(global-set-key (kbd "M-x") 'smex)  ;; Bind M-x to Smex
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)  ;; Bind M-X to major mode commands
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command) ;; Restore old M-x functionality
+#+END_SRC
+
+** Ace Window (Efficient Window Management)
+:PROPERTIES:
+:ID: af8869c2-339e-4c4e-909e-ea66f921df40
+:END:
+
+Ace Window allows quick and efficient window switching using shortcuts.
+
+#+BEGIN_SRC emacs-lisp
+(use-package ace-window
+  :ensure t
+  :init
+  (global-set-key (kbd "M-o") 'ace-window)  ;; Use M-o to switch windows
+  (setq aw-keys '(?a ?s ?d ?f ?j ?k ?l))  ;; Define Aw keys
+  (setq aw-background nil)
+  (custom-set-faces
+   '(aw-leading-char-face
+     ((t (:inherit ace-jump-face-foreground :height 3.0))))))
+
+;; Define custom window actions for Ace-Window dispatch
+(defvar aw-dispatch-alist
+  '((?x aw-delete-window "Delete Window")
+    (?m aw-swap-window "Swap Windows")
+    (?M aw-move-window "Move Window")
+    (?j aw-switch-buffer-in-window "Select Buffer")
+    (?n aw-flip-window)
+    (?u aw-switch-buffer-other-window "Switch Buffer in Other Window")
+    (?c aw-split-window-fair "Split Fair Window")
+    (?v aw-split-window-vert "Split Vert Window")
+    (?b aw-split-window-horz "Split Horizontally")
+    (?o delete-other-windows "Delete Other Windows")
+    (?? aw-show-dispatch-help))
+  "Custom actions for `aw-dispatch-default' command.")
+#+END_SRC
+
+** Ace Jump Mode (Quick Cursor Navigation)
+:PROPERTIES:
+:ID: 435a017d-d343-4fcc-b3ee-106e3c7525eb
+:END:
+
+Ace Jump allows fast navigation using a single keystroke.
+
+#+BEGIN_SRC emacs-lisp
+(use-package use-package-chords
+  :ensure t
+  :config (key-chord-mode 1))
+
+(use-package ace-jump-mode
+  :ensure t
+  :chords (("jj" . ace-jump-char-mode)
+           ("jk" . ace-jump-word-mode)
+           ("jl" . ace-jump-line-mode)))
+#+END_SRC
+
+** Dumb Jump (Go to Definition)
+:PROPERTIES:
+:ID: c077009f-4e54-41aa-80d5-8e71ac649984
+:END:
+
+Dumb Jump provides quick "go-to-definition" functionality.
+
+#+BEGIN_SRC emacs-lisp
+(use-package dumb-jump
+  :ensure t
+  :init (dumb-jump-mode)
+  :bind (("C-c o" . dumb-jump-go-other-window)
+         ("C-c j" . dumb-jump-go)
+         ("C-c x" . dumb-jump-go-prefer-external)
+         ("C-c z" . dumb-jump-go-prefer-external-other-window)))
+#+END_SRC
+
+** vertico-posframe
+:PROPERTIES:
+:ID:       1f76e8df-a31a-46bc-90ed-dbe1bd98246c
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode)
+  (setq vertico-cycle t))
+
+(use-package posframe
+  :ensure t)
+
+(use-package vertico-posframe
+  :ensure t
+  :after (vertico posframe)
+  :config
+  (setq vertico-posframe-width 80
+        vertico-posframe-height 20
+        vertico-posframe-poshandler 'posframe-poshandler-frame-center)
+  (vertico-posframe-mode 1))
+#+END_SRC

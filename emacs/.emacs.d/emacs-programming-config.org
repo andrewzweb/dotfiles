@@ -1,0 +1,666 @@
+
+* Programming
+:PROPERTIES:
+:ID:       753555db-2d5d-4685-b9e3-34b95222034b
+:END:
+
+** Autocomplete
+:PROPERTIES:
+:ID:       8feaed37-fd56-4c09-946f-1083bf65907b
+:END:
+
+*** flycheck-pycheckers
+:PROPERTIES:
+:ID:       ce5e4dec-31dd-479b-afa7-7bee4610f2fb
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck-pycheckers
+  :ensure t
+  :config
+  (with-eval-after-load 'flycheck
+    (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup)
+    (flycheck-add-next-checker 'python-flake8 'python-pylint)))
+#+END_SRC
+
+*** flyckeck-mode
+:PROPERTIES:
+:ID:       42338037-a425-4345-8233-6a2b2fd030d4
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode)
+  :config
+  (setq flycheck-indication-mode 'right-fringe))
+#+END_SRC
+
+*** company and lsp
+:PROPERTIES:
+:ID:       d73f9706-2193-4b09-9925-8ba517935473
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  :hook ((python-mode . lsp-deferred))
+  :custom (read-process-output-max (* 1024 1024))
+  :init
+  ;(setq lsp-completion-provide :none)
+  ;(setq lsp-diagnostic-provider :flycheck)
+  :config
+  (define-key lsp-mode-map [tab] 'lsp-tab-completion-or-next-field)
+  ;; Point to the pylsp executable in your virtualenv
+  (setq lsp-python-ms-executable "~/.virtualenvs/3.11/bin/pylsp")
+  (setq lsp-python-executable-cmd "~/.virtualenvs/3.11/bin/python")
+  ;; Other lsp-mode configurations...
+  (setq lsp-disabled-clients '(pyls))
+)
+
+(defun lsp-tab-completion-or-next-field ()
+  (interactive)
+  (or (yas-expand)
+      (company-complete-common-or-cycle)
+      (yas-next-field)))
+
+(use-package company
+  :after lsp-mode
+  :hook (prog-mode . company-mode)
+  :bind (:map company-active-map
+         ("<tab>" . company-complete-selection))
+        (:map lsp-mode-map
+         ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.2)
+  (company-show-numbers nil)
+  :ensure t
+  :config
+  (global-company-mode)
+  (define-key company-active-map (kbd "TAB") 'company-complete-selection)
+  (define-key company-active-map [tab] 'company-complete-selection)
+  (setq company-backends
+        '((company-jedi company-files company-keywords company-capf company-yasnippet)))
+  (setq company-tooltip-align-annotations t
+        company-tooltip-flip-when-above t))
+
+;; Adjust company keybindings
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "<tab>") 'lsp-tab-completion-or-next-field)
+  (define-key company-active-map (kbd "TAB") 'company-complete-selection)
+  (define-key company-active-map (kbd "TAB-SPC") 'company-complete))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;; Optionally use lsp-ui for fancy UI integrations (popups for function signatures, peek, etc.)
+(use-package lsp-ui
+  :ensure t
+  :after lsp-mode
+  :commands lsp-ui-mode
+  :hook (lsp-mode . lsp-ui-mode)
+  :bind (:map lsp-mode-map
+          ("C-c d" . lsp-ui-doc-show))
+  :config
+  ;; Enable the documentation pop-up
+  (setq lsp-ui-doc-enable t
+        ; Don't show doc on cursor hover
+        lsp-ui-doc-show-with-cursor nil
+        ; Show doc on mouse hover
+        lsp-ui-doc-show-with-mouse t
+
+        ;; Position the documentation frame at point
+        lsp-ui-doc-position 'at-point
+        ;; Show the documentation frame after a delay (in seconds)
+        lsp-ui-doc-delay 0.5
+        ;; Use a border for the documentation frame
+        lsp-ui-doc-use-childframe t
+        lsp-ui-doc-use-webkit t
+        ;; Set the maximum width and height of the documentation frame
+        lsp-ui-doc-max-width 150
+        lsp-ui-doc-max-height 30
+        ;; Set the background and foreground colors
+        lsp-ui-doc-background "#1e1e1e"
+        lsp-ui-doc-border "#c678dd"
+        ;; Use a custom font for the documentation frame
+        lsp-ui-doc-font '("Source Code Pro" . 12))
+    :bind
+    (:map lsp-ui-mode-map
+        ("C-c d" . lsp-ui-doc-show)        ; Show doc window
+        ("C-c D" . lsp-ui-doc-hide)        ; Hide doc window
+        ("M-?" . lsp-ui-doc-glance))      ; Temporarily show doc
+  
+  ;; Customize the sideline diagnostics
+  (setq lsp-ui-sideline-enable t
+        lsp-ui-sideline-show-hover t
+        lsp-ui-sideline-show-code-actions t
+        lsp-ui-sideline-show-diagnostics t
+        lsp-ui-sideline-ignore-duplicate t))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package helpful
+  :ensure t
+  :bind (("C-c C-d" . helpful-at-point)))
+#+END_SRC
+
+** Project & git
+:PROPERTIES:
+:ID:       b36b284f-3dcb-4d8e-832d-47fb91c15c96
+:END:
+
+*** Magit
+:PROPERTIES:
+:ID:       87e442ff-2b3a-4a3d-b7ce-10ab2734a72f
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package magit
+  :ensure t
+  :bind ("C-c g" . magit-status)
+  :config
+  (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
+#+END_SRC
+
+#+RESULTS:
+: magit-status
+
+*** Git-Gutter
+:PROPERTIES:
+:ID:       d828a30d-7584-4c63-a31f-4e937f55d0dd
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package git-gutter
+  :ensure t
+  :init
+  (progn
+    (global-git-gutter-mode t)
+    (add-hook 'ruby-mode-hook 'git-gutter-mode)
+    (add-hook 'python-mode-hook 'git-gutter-mode))
+  :custom
+  (git-gutter:modified-sign "  ")
+  (git-gutter:added-sign "++")
+  (git-gutter:deleted-sign "--")
+  ;; Uncomment the following lines to customize the colors
+  ;; (git-gutter:modified (quote ("purple" . nil)))
+  ;; (git-gutter:added (quote ("green" . nil)))
+  ;; (git-gutter:deleted (quote ("red" . nil)))
+)
+#+END_SRC
+
+*** Projectile
+:PROPERTIES:
+:ID:       9d87f289-83d8-4227-8e5d-8c8e045bb8e4
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :ensure t
+  :diminish projectile-mode
+  :commands (projectile-mode projectile-switch-project)
+  :bind (("C-c p p" . projectile-switch-project)
+         ("C-c p a" . projectile-add-known-project)
+         ("C-c p g" . projectile-grep)
+         ("C-c p f" . projectile-find-file))
+  :config
+  (projectile-global-mode t)
+  (setq projectile-enable-caching t)
+  (setq projectile-switch-project-action 'projectile-dired))
+#+END_SRC
+
+** Frontend
+:PROPERTIES:
+:ID:       93eae05b-0759-4fc5-92cc-be068f89b04c
+:END:
+
+*** Sass-Mode
+:PROPERTIES:
+:ID:       0b84c0a1-8f29-4ed2-9874-0c9ff17b2c66
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package sass-mode
+  :ensure t
+  :config (setq sass-indent-offset 2))
+#+END_SRC
+
+*** Web-Beautify-Mode
+:PROPERTIES:
+:ID:       a20d76f2-f1e9-4998-b9ea-e1d459507d5c
+:END:
+
+Docs: https://github.com/yasuyk/web-beautify
+
+#+BEGIN_SRC emacs-lisp
+(use-package web-beautify
+  :ensure t
+  :commands (web-beautify-css
+             web-beautify-css-buffer
+             web-beautify-html
+             web-beautify-html-buffer
+             web-beautify-js
+             web-beautify-js-buffer))
+
+#+END_SRC
+
+*** Rainbow-mode
+:PROPERTIES:
+:ID:       1b96e88f-b261-4303-a47c-e88d23731807
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-mode
+  :ensure t
+  :delight
+  :hook (css-mode sass-mode)
+)
+#+END_SRC
+
+*** Rainbow delimiters
+:PROPERTIES:
+:ID:       1b96e88f-b261-4303-a47c-e88d23731807
+:END:
+
+make brackets colorfull
+
+#+BEGIN_SRC emacs-lisp
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode)
+  :hook (org-mode . rainbow-delimiters-mode)
+  :hook (python-mode . rainbow-delimiters-mode)
+  :config
+  (set-face-foreground 'rainbow-delimiters-depth-1-face "#E06C75")
+  (set-face-foreground 'rainbow-delimiters-depth-2-face "#E5C07B")
+  (set-face-foreground 'rainbow-delimiters-depth-3-face "#98C379")
+  (set-face-foreground 'rainbow-delimiters-depth-4-face "#56B6C2")
+  (set-face-foreground 'rainbow-delimiters-depth-5-face "#61AFEF")
+  (set-face-foreground 'rainbow-delimiters-depth-6-face "#C678DD")
+  (set-face-foreground 'rainbow-delimiters-depth-7-face "#BE5046")
+  (set-face-foreground 'rainbow-delimiters-depth-8-face "#ABB2BF")
+  (set-face-foreground 'rainbow-delimiters-depth-9-face "#5C6370"))
+#+END_SRC
+
+*** Multiple Cursors
+:PROPERTIES:
+:ID:       73e6166a-c123-4411-aa32-899ae72e021a
+:END:
+
+Docs: https://github.com/magnars/multiple-cursors.el/issues/105
+
+#+BEGIN_SRC
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C-c m e"    . mc/edit-lines)
+         ("C-c m n"    . mc/mark-next-like-this)
+         ("C-c m p"    . mc/mark-previous-like-this)
+         ("C-c m a"    . mc/mark-all-like-this)
+         ("C-c m t"    . mc/mark-next-symbol-like-this)
+         ("C-c m d"    . mc/mark-all-dwim)))
+
+
+;(global-set-key (kbd "C-c .") 'mc/mark-next-like-this)
+;(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+;(global-set-key (kbd "C-c ,") 'mc/mark-previous-like-this)
+;(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+;(global-set-key (kbd "C-c C-l") 'mc/mark-all-like-this)
+#+END_SRC
+
+*** Web-Mode
+:PROPERTIES:
+:ID:       463f226d-2e5a-4a5b-9b84-4a8a952f9e0d
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package web-mode
+  :ensure t
+  :mode ("\\.html\\'" . web-mode)
+  :init
+  (setq web-mode-enable-current-element-highlight t)
+  :config
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-enable-auto-pairing t)
+  (setq web-mode-enable-auto-expanding t)
+  (setq web-mode-enable-css-colorization t)
+  ;; Uncomment the following line to enable auto-quoting
+  ;; (setq web-mode-enable-auto-quoting t)
+)
+#+END_SRC
+
+*** Emmet Mode
+:PROPERTIES:
+:ID:       305ba2b4-881d-4a39-a6cd-d69e2f7f1da5
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package emmet-mode
+  :ensure t
+  :commands emmet-mode
+  :init
+  (setq emmet-indentation 2)
+  :config
+  (add-hook 'html-mode-hook 'emmet-mode)
+  (add-hook 'css-mode-hook 'emmet-mode)
+  (add-hook 'sass-mode-hook 'emmet-mode)
+  (add-hook 'web-mode-hook 'emmet-mode)
+  (add-hook 'rjsx-mode-hook 'emmet-mode)
+)
+#+END_SRC
+
+*** Vue-Mode
+:PROPERTIES:
+:ID:       6b79868f-141a-4083-8d5b-6d2b4bba7fd3
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package vue-mode
+  :ensure t
+  :config
+  (add-hook 'vue-mode-hook 'company-mode))
+#+END_SRC
+
+*** React-mode
+:PROPERTIES:
+:ID:       a85c71b5-6f9a-47df-9f29-6b4fc2f3b60c
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package rjsx-mode
+  :ensure t)
+#+END_SRC
+
+*** Prettier
+:PROPERTIES:
+:ID:       e93b6229-2212-4375-8624-ae4402f25fe2
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package prettier
+  :ensure t)
+#+END_SRC
+
+*** js2-mode
+:PROPERTIES:
+:ID: 2dc5d0f3-3f17-4197-b0f6-67815ae6162f
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package js2-mode
+  :ensure t
+  :mode ("\\.js\\'" . js2-mode)
+  :interpreter ("node" . js2-mode)
+  :config
+  (setq js2-basic-offset 2)
+  (setq js2-strict-trailing-comma-warning nil)
+  (setq js2-strict-missing-semi-warning nil)
+  (setq js2-mode-show-strict-warnings nil)
+  (setq js-indent-level 2)
+  (add-hook 'js2-mode-hook 'company-mode))
+#+END_SRC
+
+** Backend
+:PROPERTIES:
+:ID:       ed5ba3f4-bf4e-4a38-a1fe-efa16b0338dd
+:END:
+
+*** Pyenv
+:PROPERTIES:
+:ID:       44a8c951-68a0-4a68-a331-11ccc5d9381c
+:END:
+
+#+BEGIN_SRC emacs-lisp
+;; pyenv configuration
+(use-package pyenv-mode
+  :ensure t
+  :config
+  ;; if you set the global version to 3.9, you don't need the line below
+  ;; otherwise, you can set a default version for Emacs to use here
+  (setenv "PYENV_VERSION" "3.11.0")
+)
+
+;(venv-workon "market")
+#+END_SRC
+
+*** Pylint
+:PROPERTIES:
+:CREATED:  [2023-07-17 Mon 13:52]
+:ID:       d3af85f6-b0e1-4c3e-99f0-d48856e244c3
+:END:
+
+#+BEGIN_SRC
+;; Pylint
+(use-package pylint
+  :ensure t
+  :init
+  (autoload 'pylint "pylint")
+  (add-hook 'python-mode-hook 'pylint-add-menu-items)
+  (add-hook 'python-mode-hook 'pylint-add-key-bindings)
+)
+#+END_SRC
+
+and in ~/HOME_DIR/.pylintrc
+
+https://github.com/adafruit/Adafruit_Learning_System_Guides/blob/master/.pylintrc 
+
+example 
+
+#+BEGIN_SRC sh
+[MESSAGES CONTROL]
+disable=import-error,print-statement
+
+[REPORTS]
+evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)
+#+END_SRC
+
+*** Pytest
+:PROPERTIES:
+:ID:       f8c93462-40a9-4d4f-9847-467d4190ce76
+:END:
+
+#+BEGIN_SRC emacs-lisp 
+(use-package pytest
+    :ensure t
+    :bind ("C-c t" . pytest-all)
+    :bind ("C-c i" . pytest-one)
+    :bind ("C-c m" . pytest-module)
+    :bind ("C-c d" . pytest-pdb-all)
+    :bind ("C-t" . pytest-all)
+)
+
+(add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1)))
+
+;(add-to-list 'pytest-project-names "/home/andrew/workspace/work/market/market-backend/apps")
+;(add-to-list 'pytest-project-root-files "pytest.ini")
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            ;(local-set-key "\C-ca" 'pytest-all)
+            ;(local-set-key "\C-cm" 'pytest-module)
+            (local-set-key "\C-c." 'pytest-one)
+            (local-set-key "\C-cc" 'pytest-again)
+            (local-set-key "\C-cd" 'pytest-directory)
+            (local-set-key "\C-cpa" 'pytest-pdb-all)
+            (local-set-key "\C-cpm" 'pytest-pdb-module)
+            (local-set-key "\C-cp." 'pytest-pdb-one)))
+
+;((python-mode
+;  (pytest-global-name . "xe test")
+;  (pytest-cmd-flags . "")))
+#+END_SRC
+
+*** Virtualenvwrapper
+:PROPERTIES:
+:ID:       7a6b4d0b-a51c-4014-8c37-d4b50210e45f
+:END:
+
+https://github.com/porterjamesj/virtualenvwrapper.el
+
+#+BEGIN_SRC emacs-lisp
+(use-package virtualenvwrapper
+  :ensure t
+  :init
+  (setq venv-location "~/.virtualenvs/")
+  :config
+  (venv-initialize-interactive-shells)
+  (venv-initialize-eshell))
+
+(add-hook 'venv-postmkvirtualenv-hook
+          (lambda () (shell-command "pip install pytest pylint flake8 jedi elpy python-coverage>=4.0")))
+#+END_SRC
+
+*** Python-mode
+:PROPERTIES:
+:ID:       44f0b360-c33c-4884-8ecd-9dbd4adf2ab0
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package python-mode
+  :ensure t
+  :mode ("\\.py\\'" . python-mode)
+  :interpreter ("python" . python-mode)
+  :config
+  (setq python-shell-interpreter "~/.virtualenv/3.10/bin/python")
+  :config
+  (add-hook 'python-mode-hook 'company-mode)
+)
+#+END_SRC
+
+** Usefull
+:PROPERTIES:
+:ID:       86efd323-7ece-4f4b-a305-69256e9991c0
+:END:
+
+*** Markdown
+:PROPERTIES:
+:ID:       46c3cc0c-cd33-4fe9-b83d-1d3495d3f5b9
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :ensure t
+  :mode (("\\.markdown\\'" . markdown-mode)
+         ("\\.md\\'"       . markdown-mode)))
+#+END_SRC
+
+*** GPTel
+:PROPERTIES:
+:ID:       5f55fcce-775a-404e-b89b-eac287b14077
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package gptel
+  :ensure t
+  :config
+  ;; Retrieve the API key from the system environment
+  (setq gptel-api-key (getenv "GPTEL_API_KEY")) ;; Replace "GPTEL_API_KEY" with your actual environment variable name
+  (setq gptel-model "gpt-4o")
+  )
+
+;; OPTIONAL configuration
+;(setq
+; gptel-model   "Local_LLM"
+; gptel-backend
+; (gptel-make-openai "Local_LLM"
+;   :protocol "http"
+;   :host "192.168.1.18:1234"
+;   :key "lm-studio"
+;   :endpoint "/v1/chat/completions"
+;   :stream t
+;   :models '(
+;      "lmstudio-community/Meta-Llama-3-8b-Instruct-GGUF"
+;)))
+
+(global-set-key (kbd "C-c C-g") 'gptel-send)
+(global-set-key (kbd "C-c C-m") 'gptel-menu)
+#+END_SRC
+
+*** Doom-modeline
+:PROPERTIES:
+:ID:       96dfd3cc-05d4-452e-9b8d-c929e23df55f
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package doom-modeline
+  :ensure t
+  :init
+  (doom-modeline-mode 1)
+  :config
+  (setq doom-modeline-height 25)
+  (setq doom-modeline-bar-width 3)
+  (setq doom-modeline-icon t)
+  (setq doom-modeline-major-mode-icon t)
+  (setq doom-modeline-major-mode-color-icon t)
+  (setq doom-modeline-buffer-file-name-style 'truncate-upto-project))
+#+END_SRC
+
+*** All Icons
+:PROPERTIES:
+:ID:       96cfdec0-a79c-4f4a-91ca-6e320419408f
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package all-the-icons
+  :ensure t)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(global-font-lock-mode 1)
+#+END_SRC
+
+*** Add Emoji
+:PROPERTIES:
+:ID:       546a77d4-8dc8-4323-815a-f4590333ee34
+:END:
+
+#+BEGIN_SRC emacs-lisp
+;; Main emoji package
+(use-package emojify
+  :ensure t
+  :hook (after-init . global-emojify-mode)
+  :config
+  ;; Set proper emoji font
+  (when (member "Segoe UI Emoji" (font-family-list))
+    (set-fontset-font t 'symbol (font-spec :family "Segoe UI Emoji") nil 'prepend))
+
+  ;; Display settings
+  (setq emojify-display-style 'unicode)
+  (setq emojify-emoji-styles '(unicode))
+
+  ;; Enable emoji in buffer
+  (add-hook 'after-init-hook #'global-emojify-mode)
+
+  :bind
+  (("C-c i" . emojify-insert-emoji)    ; Insert emoji
+   ("C-c E" . emojify-apropos-emoji))) ; Search emoji
+#+END_SRC
+
+*** Aider
+:PROPERTIES:
+:ID:       1b27f4b7-e345-4dfb-962b-0457511df785
+:END:
+
+*Install*
+
+#+BEGIN_SRC emacs-lisp
+;; (package-vc-install '(aider :url "https://github.com/tninja/aider.el"))
+;; (package! aider :recipe (:host github :repo "tninja/aider.el" :files ("aider.el" "aider-doom.el")))
+#+END_SRC
+
+*Usage*
+
+#+BEGIN_SRC emacs-lisp
+(use-package aider
+  :config
+  (setq aider-args '("--model" "mini"))
+  ;; Bind the transient menu to C-c f
+
+  ;; Optional: You can define other models by uncommenting and configuring
+  ;; (setenv "OPENAI_API_KEY" "sk-...")
+  (setq aider-args `("--config" ,(expand-file-name "~/.aider.conf.yml")))
+  (global-set-key (kbd "C-c f") 'aider-transient-menu)
+)
+#+END_SRC

@@ -1,0 +1,573 @@
+* Org-Mode Configuration
+:PROPERTIES:
+:ID:       2635614e-779e-4d80-830c-f236ce756e3f
+:END:
+
+** Core Settings
+:PROPERTIES:
+:ID:       d8debe44-8997-48e6-af02-47de3be207fe
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :ensure t
+  :pin manual
+  :custom
+  ;; Better default settings
+  (org-startup-folded 'content)
+  (org-startup-indented t)
+  (org-adapt-indentation t)
+  (org-edit-src-content-indentation 0)
+  (org-src-tab-acts-natively t)
+  (org-src-fontify-natively t)
+  (org-use-speed-commands t)
+  (org-return-follows-link t)
+  (org-hide-emphasis-markers t)
+  (org-pretty-entities t)
+  (org-fontify-whole-heading-line t)
+  (org-fontify-done-headline t)
+  (org-fontify-quote-and-verse-blocks t)
+  (org-list-allow-alphabetical t)
+  (org-catch-invisible-edits 'smart)
+  (org-special-ctrl-a/e t)
+  (org-insert-heading-respect-content t)
+  (org-M-RET-may-split-line '((default . nil)))
+
+** Keybindings and Navigation
+:PROPERTIES:
+:ID:       e7ea7036-c9c1-4a33-a596-65036d2b273b
+:END:
+
+#+BEGIN_SRC emacs-lisp
+;; Global org keybindings
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c b") 'org-switchb)
+
+;; Org-mode specific keybindings
+(with-eval-after-load 'org
+  (define-key org-mode-map (kbd "C-c t") 'org-todo)
+  (define-key org-mode-map (kbd "C-c n") 'org-next-visible-heading)
+  (define-key org-mode-map (kbd "C-c p") 'org-previous-visible-heading)
+  (define-key org-mode-map (kbd "C-c i") 'org-clock-in)
+  (define-key org-mode-map (kbd "C-c o") 'org-clock-out)
+  (define-key org-mode-map (kbd "C-c r") 'org-refile)
+  (define-key org-mode-map (kbd "C-c s") 'org-schedule)
+  (define-key org-mode-map (kbd "C-c d") 'org-deadline)
+  (define-key org-mode-map (kbd "C-c f") 'org-footnote-action)
+  (define-key org-mode-map (kbd "C-c k") 'org-cut-subtree)
+  (define-key org-mode-map (kbd "C-c y") 'org-paste-subtree)
+  (define-key org-mode-map (kbd "C-c m") 'org-mark-subtree)
+  (define-key org-mode-map (kbd "C-c w") 'org-refile-goto-last-stored)
+  (define-key org-mode-map (kbd "C-c v") 'org-show-todo-tree)
+  (define-key org-mode-map (kbd "C-c h") 'org-toggle-heading)
+  (define-key org-mode-map (kbd "C-c j") 'org-goto)
+  (define-key org-mode-map (kbd "C-c e") 'org-set-effort)
+  (define-key org-mode-map (kbd "C-c x") 'org-export-dispatch))
+
+;; Speed commands
+(setq org-use-speed-commands t)
+(add-to-list 'org-speed-commands-user '("x" org-todo "DONE"))
+(add-to-list 'org-speed-commands-user '("t" org-todo "TODO"))
+(add-to-list 'org-speed-commands-user '("n" org-next-visible-heading))
+(add-to-list 'org-speed-commands-user '("p" org-previous-visible-heading))
+
+** File Management
+:PROPERTIES:
+:ID:       6ed4d139-0420-4e09-acfb-95bb938be86d
+:END:
+
+#+BEGIN_SRC emacs-lisp
+;; File associations
+(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|org_archive\\)$" . org-mode))
+
+;; Detect OS and set org-directory accordingly
+(setq my-org-workspace
+      (cond
+       ((eq system-type 'darwin)  "~/Library/Mobile Documents/com~apple~CloudDocs/org/")
+       ((eq system-type 'gnu/linux) "~/Documents/org/")
+       ((eq system-type 'windows-nt) "C:/Users/andrew/Documents/org/")
+       (t (expand-file-name "~/org/")))) ;; Default fallback
+
+(setq org-directory my-org-workspace)
+(setq org-default-notes-file (concat org-directory "notes.org"))
+
+;; Set agenda files dynamically
+(setq org-agenda-files (directory-files-recursively
+                        (concat org-directory "workspace/") "\\.org$"))
+
+;; File templates
+(setq org-structure-template-alist
+      '(("s" "#+BEGIN_SRC ?\n\n#+END_SRC")
+        ("e" "#+BEGIN_EXAMPLE\n\n#+END_EXAMPLE")
+        ("q" "#+BEGIN_QUOTE\n\n#+END_QUOTE")
+        ("v" "#+BEGIN_VERSE\n\n#+END_VERSE")
+        ("c" "#+BEGIN_CENTER\n\n#+END_CENTER")
+        ("l" "#+BEGIN_LaTeX\n\n#+END_LaTeX")
+        ("L" "#+LaTeX: ")
+        ("h" "#+BEGIN_HTML\n\n#+END_HTML")
+        ("H" "#+HTML: ")
+        ("a" "#+BEGIN_ASCII\n\n#+END_ASCII")
+        ("A" "#+ASCII: ")
+        ("i" "#+INDEX: ")
+        ("I" "#+INCLUDE: ")))
+
+;; Auto-save and backup settings
+(setq org-auto-save-visited-mode t)
+(setq org-save-all-org-buffers t)
+(setq org-export-backends '(ascii html latex md odt))
+
+** Custom Styles
+:PROPERTIES:
+:CREATED:  [2023-10-23 пн 14:46]
+:ID:       eb4c441b-227c-4890-9be4-2e8acee039ff
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(custom-set-faces
+ '(org-level-1 ((t (:foreground "#E1E1E0" :weight bold :height 1.3))))
+ '(org-level-2 ((t (:foreground "#D6BBB5" :weight bold :height 1.2))))
+ ;; ... customize other org-level faces similarly ...
+ '(org-document-title ((t (:foreground "#EFBBBF" :weight bold :height 1.5))))
+ '(org-done ((t (:foreground "#5A7E63" :weight bold))))
+ '(org-todo ((t (:foreground "#B57660" :weight bold)))))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(defun my-org-mode-visual-tweaks ()
+  (setq line-spacing 0.3) ; adjust the line spacing
+  (variable-pitch-mode 1) ; use variable pitch fonts
+  )
+(add-hook 'org-mode-hook 'my-org-mode-visual-tweaks)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(defun my-adjoin-to-list-or-symbol (element list-or-symbol)
+  (let ((list (if (not (listp list-or-symbol))
+                  (list list-or-symbol)
+                list-or-symbol)))
+    (require 'cl-lib)
+    (cl-adjoin element list)))
+
+(custom-theme-set-faces
+ 'user
+ '(org-block ((t (:inherit fixed-pitch))))
+ '(org-code ((t (:inherit (shadow fixed-pitch)))))
+ '(org-document-info ((t (:foreground "dark orange"))))
+ '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+ '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+ '(org-link ((t (:foreground "royal blue" :underline t))))
+ '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-property-value ((t (:inherit fixed-pitch))) t)
+ '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+ '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
+ '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+ '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
+#+END_SRC
+
+** Org-Agenda
+:PROPERTIES:
+:ID:       9a602078-bdff-4044-9da2-03c1601a5a20
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-custom-commands
+      '(("d" "Custom Day Overview"
+         ((agenda "" ((org-agenda-span 'day)
+                      (org-agenda-include-diary t)
+                      (org-agenda-show-log t)
+                      (org-agenda-prefix-format '((agenda . " %i %-12:c%?-12t% s %e ")))
+                      (org-agenda-time-grid '((daily today) (600 800 1000 1200 1400 1600 1800 2000 2200) "......" "----------------"))))))))
+#+END_SRC
+
+** Set Custom Todo Keywords
+   :PROPERTIES:
+   :ID: 22fa63d3-9cf3-4025-b9a5-13b58b30bcc6
+   :END:
+
+#+BEGIN_SRC emacs-lisp
+(setq org-todo-keywords '((sequence "TODO(t)" "PROC(p)" "|" "DONE(d!)" "CANCEL(c)")))
+
+(setq org-todo-keyword-faces '(("TODO" . (:foreground "red" :weight bold))
+                               ("PROC" . (:foreground "yellow" :weight bold))
+                               ("DONE" . (:foreground "green" :weight bold))
+                               ("CANCEL" . (:foreground "blue" :weight bold))))
+#+END_SRC
+
+** Set Custom Org Tags
+   :PROPERTIES:
+   :ID: 92dcb754-3904-4b71-b403-401580a7a359
+   :END:
+
+#+BEGIN_SRC emacs-lisp
+(setq org-tag-alist '((:startgroup)
+                      ("@dev" . ?d) ("@home" . ?h) ("@english" . ?e)
+                      ("@meeting" . ?m) ("@chill" . ?c)
+                      (:endgroup)
+                      ("laptop" . ?l) ("book" . ?b) ("video" . ?v)))
+
+(setq org-tag-faces
+      '(("english" . (:foreground "#FFB6C1" :weight bold)) ; Soft pink
+        ("newtend" . (:foreground "#90EE90" :weight bold)) ; Light green
+        ("proxyua" . (:foreground "#00FA9A" :weight bold)))) ; Green with aqua (Medium Spring Green)
+#+END_SRC
+
+** Org Capture
+   :PROPERTIES:
+   :ID: 51173503-66a0-4cd4-b196-c00d26d26182
+   :END:
+
+#+BEGIN_SRC emacs-lisp
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline (concat org-directory "workspace/workspace.org") "Workspace")
+         "* TODO %?\n %i\n %a"  :empty-lines 1)
+        ("r" "Refile" entry (file+headline (concat org-directory "workspace/workspace.org") "Refile")
+         "* TODO %?\n %i\n %a"  :empty-lines 1)
+        ("j" "Journal" entry (file+olp+datetree (concat org-directory "workspace/journal.org") "Journal")
+         "* %?\nEntered on %U\n %i\n %a" :empty-lines 1)))
+#+END_SRC
+
+** Org Agenda
+   :PROPERTIES:
+   :ID: 98def581-d254-4608-8b66-dec9111dbd25
+   :END:
+
+#+BEGIN_SRC emacs-lisp
+;; Set org agenda window to open in the current window
+(setq org-agenda-window-setup 'current-window)
+
+;; Skip scheduled items in the agenda if a deadline is present
+(setq org-agenda-skip-scheduled-delay-if-deadline t)
+
+;; Set org agenda span to show only the current day's tasks
+(setq org-agenda-span 'day)
+
+;; Customize org agenda time grid
+(setq org-agenda-time-grid '((daily today remove-match)
+                             (0600 0800 1000 1200 1400 1600 1800 2000 2200)
+                             "   " "..............."))
+#+END_SRC
+
+** Org-Bullets
+   :PROPERTIES:
+   :ID: e5387b92-7a46-4e1d-b5b6-f311259a0b63
+   :END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+  :ensure t
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "◉" "○" "◉")))
+#+END_SRC
+
+** Logging time
+:PROPERTIES:
+:ID:       0660ba76-62fe-413d-9843-89801acdde0d
+:END:
+
+*** Log clock time in the LOGBOOK drawer
+:PROPERTIES:
+:ID:       2ef3d603-f3ac-417e-b697-c879f86ee8e4
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(defun bh/remove-empty-drawer-on-clock-out ()
+  "Remove empty LOGBOOK drawers on clock out."
+  (interactive)
+  (save-excursion
+    (beginning-of-line 0)
+    (org-remove-empty-drawer-at "LOGBOOK" (point))))
+
+(add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
+
+(setq org-drawers '("PROPERTIES" "LOGBOOK"))
+(setq org-clock-into-drawer t)
+(setq org-log-state-notes-insert-after-drawers nil)
+(custom-set-variables '(org-log-into-drawer t))
+#+END_SRC
+
+*** Configure clock settings
+   :PROPERTIES:
+   :ID: 31d8e92a-7f48-4611-a38b-5ad565f171ac
+   :END:
+
+#+BEGIN_SRC emacs-lisp
+(org-clock-persistence-insinuate)
+(setq org-clock-persist t)
+(setq org-clock-in-resume t)
+(setq org-clock-persist-query-resume nil)
+(setq org-clock-out-when-done t)
+(setq org-clock-auto-clock-resolution 'when-no-clock-is-running)
+(setq org-clock-report-include-clocking-task t)
+(setq org-pretty-entities t)
+#+END_SRC
+
+*** Enable clock history
+:PROPERTIES:
+:ID:       b6f05726-8aae-4024-a930-c77989e68719
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(setq org-clock-persist 'history)
+(org-clock-persistence-insinuate)
+#+END_SRC
+
+*** Customize timestamp format
+:PROPERTIES:
+:ID:       b0e2aaaa-f301-4bad-91f1-07db56a805cc
+:END:
+
+#+BEGIN_SRC emacs-lisp
+;(setq org-time-stamp-formats '(("<%Y-%m-%d %a>")
+;                              ("<%Y-%m-%d %a %H:%M:%S>")))
+#+END_SRC
+
+*** Customize clock sum format
+   :PROPERTIES:
+   :ID: 9a5f0b1a-8cc8-4e05-917b-2f2d920838ab
+   :END:
+
+#+BEGIN_SRC emacs-lisp
+(setq org-duration-format 'h:mm)
+#+END_SRC
+
+*** Automatically add CREATED property to all todos
+   :PROPERTIES:
+   :ID: 5e95b441-a159-4899-915e-e9970a2f3736
+   :END:
+
+#+BEGIN_SRC emacs-lisp
+(defvar org-created-property-name "CREATED"
+  "The name of the org-mode property that stores the creation date of the entry")
+
+(defun org-set-created-property (&optional active NAME)
+  "Set a property on the entry giving the creation time."
+  (let* ((created (or NAME org-created-property-name))
+         (fmt (if active "<%s>" "[%s]"))
+         (now (format fmt (format-time-string "%Y-%m-%d %a %H:%M"))))
+
+    (unless (org-entry-get (point) created nil)
+      (org-set-property created now))))
+
+(add-hook 'org-insert-heading-hook
+          (lambda ()
+            (save-excursion
+              (org-back-to-heading)
+              (org-set-created-property))))
+#+END_SRC
+
+** Org-ID for each tasks
+   :PROPERTIES:
+   :ID: 0222f813-8fc0-4abd-98e7-b9f2482f5dee
+   :END:
+
+#+BEGIN_SRC emacs-lisp
+(require 'org-id)
+
+(defun my-org-add-ids-to-headlines-in-file ()
+  "Add ID properties to all headlines in the current file."
+  (org-map-entries 'org-id-get-create))
+
+(add-hook 'org-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook 'my-org-add-ids-to-headlines-in-file nil 'local)))
+
+(add-hook 'org-capture-prepare-finalize-hook 'org-id-get-create)
+#+END_SRC
+
+*** Set default column view format for org time block report
+:PROPERTIES:
+:ID:       82ee68a1-0306-4038-abb5-1b47099f4311
+:END:
+#+BEGIN_SRC emacs-lisp
+(setq org-columns-default-format "%50ITEM(Task) %2PRIORITY %10Effort(Effort){:} %10CLOCKSUM")
+#+END_SRC
+
+** ON Source Code
+   :PROPERTIES:
+   :ID: 0f37b38b-247f-4e5d-8eb5-098399788749
+   :END:
+
+*** Code Block Settings
+:PROPERTIES:
+:ID:       4e100a1b-1ca8-44cd-98fb-614fb2573809
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(setq org-src-fontify-natively t
+      org-src-window-setup 'current-window
+      org-src-strip-leading-and-trailing-blank-lines t
+      org-src-preserve-indentation t
+      org-src-tab-acts-natively t)
+
+(setq org-src-preserve-indentation t)
+(setq org-babel-execute-src-block t)
+(setq org-babel-results-keyword t)
+(setq org-babel-tangle-jump-to-org t)
+(setq padline t)
+(setq org-babel-results-keyword "RESULTS")
+(setq org-confirm-babel-evaluate nil)
+(setq org-src-fontify-natively t)
+(setq org-src-tab-acts-natively t)
+(setq org-insert-structure-template t)
+#+END_SRC
+
+*** Customize Source Blocks 
+:PROPERTIES:
+:ID:       90e4b721-2c36-4eb0-a3e6-6b3b197cba3e
+:END:
+
+#+BEGIN_SRC emacs-lisp
+;; Customize the faces for source code blocks in Org mode
+(custom-set-faces
+  '(org-block ((t (:extend t :background "#2e3440"))))
+  '(org-block-begin-line ((t (:extend t :foreground "#d8dee9"))))
+  '(org-block-end-line ((t (:extend t :foreground "#d8dee9"))))
+  '(org-code ((t (:foreground "#d8dee9")))))
+
+;; Set a fixed width font for source code blocks
+(set-face-attribute 'org-block nil :inherit 'fixed-pitch)
+#+END_SRC
+
+*** Org Babel set Languages
+    :PROPERTIES:
+    :ID: 90311705-5299-4b73-9d88-e9f4b601d887
+    :END:
+
+#+BEGIN_SRC emacs-lisp
+;; Enable various languages for org-babel
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (lisp . t)
+   (gnuplot . t)
+   (python . t)
+   (shell . t)
+   (org . t)
+   (latex . t)
+   (python . t)
+   (sql . nil)
+   (sqlite . t)
+   (ditaa . t)
+   (js . t)))
+
+;; Customize evaluation confirmation for specific languages
+(defun my-org-confirm-babel-evaluate (lang body)
+  "Do not confirm evaluation for specific languages."
+  (not (or (string= lang "C")
+           (string= lang "java")
+           (string= lang "python")
+           (string= lang "emacs-lisp")
+           (string= lang "sqlite"))))
+(setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+#+END_SRC
+
+#+RESULTS:
+: my-org-confirm-babel-evaluate
+
+** Task Set Estimate
+   :PROPERTIES:
+   :ID: 1851e1e4-a28c-46c1-83cf-6d8a256564fe
+   :END:
+
+#+BEGIN_SRC emacs-lisp
+(defun my-set-org-effort ()
+  "Prompt user to set the Effort property with shortcuts."
+  (interactive)
+  (let* ((choices '(("1" . "0:10")
+                    ("2" . "0:20")
+                    ("3" . "0:30")
+                    ("4" . "0:40")
+                    ("5" . "1:00")))
+         (input (char-to-string (read-char-choice "Effort [1:0:10, 2:0:20, 3:0:30, 4:0:40, 5:1:00]: " 
+                                                  (string-to-list "12345"))))
+         (effort-value (cdr (assoc input choices))))
+    (org-set-property "Effort" effort-value)))
+
+;; Bind the function to a key, e.g., C-c e
+(define-key org-mode-map (kbd "C-c e") 'my-set-org-effort)
+
+(setq org-global-properties
+      '(("Effort_ALL" . "0:10 0:20 0:30 0:40 1:00 1:30 2:00 3:00 5:00")
+        ("STYLE_ALL" . "habit")))
+
+(setq org-time-clocksum-use-effort-durations t)
+#+END_SRC
+
+** Calendar 3rd party
+:PROPERTIES:
+:ID:       9d8eff5e-e533-4d31-8245-f1521a8789cb
+:END:
+
+#+BEGIN_SRC emacs-lisp
+;; Docs -- https://github.com/kiwanami/emacs-calfw?tab=readme-ov-file#cfwmodel
+(use-package calfw
+  :ensure t
+  :config
+  (require 'calfw-org))
+
+(use-package calfw-org
+  :ensure t
+  :config
+  (setq cfw:org-overwrite-default-keybinding t)
+  (setq cfw:org-agenda-schedule-args '(:scheduled :deadline :timestamp))
+)
+
+;; First day of the week
+(setq calendar-week-start-day 1) ; 0:Sunday, 1:Monday
+
+;; set hight of day by default
+;(cfw:create-calendar-component-region :height 10)
+
+;; styles
+(custom-set-faces
+ '(cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
+ '(cfw:face-header ((t (:foreground "#d0bf8f" :weight bold))))
+ '(cfw:face-sunday ((t :foreground "#cc9393" :background "grey10" :weight bold)))
+ '(cfw:face-saturday ((t :foreground "#8cd0d3" :background "grey10" :weight bold)))
+ '(cfw:face-holiday ((t :background "grey10" :foreground "#8c5353" :weight bold)))
+ '(cfw:face-grid ((t :foreground "DarkGrey")))
+ '(cfw:face-default-content ((t :foreground "#bfebbf")))
+ '(cfw:face-periods ((t :foreground "cyan")))
+ '(cfw:face-day-title ((t :background "grey10")))
+ '(cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
+ '(cfw:face-annotation ((t :foreground "RosyBrown" :inherit cfw:face-day-title)))
+ '(cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
+ '(cfw:face-today-title ((t :background "#7f9f7f" :weight bold)))
+ '(cfw:face-today ((t :background: "grey10" :weight bold)))
+ '(cfw:face-select ((t :background "#2f2f2f")))
+ '(cfw:face-toolbar ((t :foreground "Steelblue4" :background "Steelblue4")))
+ '(cfw:face-toolbar-button-off ((t :foreground "Gray10" :weight bold)))
+ '(cfw:face-toolbar-button-on ((t :foreground "Gray50" :weight bold))))
+
+(defun my-open-calendar ()
+  "Open the calendar view with org-agenda."
+  (cfw:open-org-calendar))
+
+;; open calendar
+(defun toggle-calendar ()
+  "Toggle the calendar window."
+  (if (get-buffer "*cfw-calendar*")
+      (kill-buffer "*cfw-calendar*")
+    (my-open-calendar)))
+
+(global-set-key (kbd "C-c t") 'toggle-calendar)  ; Add another keybinding to toggle
+#+END_SRC
+
+** Org-Timeblock
+:PROPERTIES:
+:ID:       36c4dc6a-2e07-4c4d-8b9c-ac4360233722
+:END:
+
+#+BEGIN_SRC
+(use-package org-timeblock
+  :ensure t
+  :bind ("C-c s" . org-timeblock)
+  :config
+  (setq org-timeblock-files (directory-files-recursively "/home/andrew/workspace/org/workspace/" "\\.org$"))
+  (setq org-timeblock-inbox-file "/home/andrew/workspace/org/workspace/inbox.org")
+)
+
+#+END_SRC

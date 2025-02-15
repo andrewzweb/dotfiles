@@ -1,0 +1,196 @@
+#+TITLE: Emacs Configuration
+#+AUTHOR: Andrewzweb
+#+EMAIL: andrewzweb@gmail.com
+#+STARTUP: content
+
+* Base Configuration
+:PROPERTIES:
+:ID:       9d67bb17-baaa-45f4-8beb-526e8dd7aad4
+:END:
+** Base UI Settings
+:PROPERTIES:
+:ID:       b8257ca1-ae74-4f9f-b215-45f7c8e7e09c
+:END:
+
+#+BEGIN_SRC emacs-lisp
+;; Disable unnecessary UI elements
+(tooltip-mode      -1)  ;; Disable tooltips
+(menu-bar-mode     -1)  ;; Hide menu bar
+(tool-bar-mode     -1)  ;; Hide tool bar
+(scroll-bar-mode   -1)  ;; Hide scroll bar
+(blink-cursor-mode -1)  ;; Disable blinking cursor
+
+;; Disable dialog boxes and enable smooth redisplay
+(setq use-dialog-box nil)
+(setq redisplay-dont-pause t)
+
+;; Use simpler y/n questions instead of yes/no prompts
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;; Enable clipboard sharing with system
+(setq x-select-enable-clipboard t)
+
+;; Don't enforce final newline in files
+(setq require-final-newline nil)
+
+;; Disable backup and auto-save files
+(setq backup-inhibited t)
+(setq auto-save-default nil)
+#+END_SRC
+
+** macOS-Specific Settings
+:PROPERTIES:
+:ID:       697fe8ea-f595-4596-af9a-59933008b49a
+:END:
+#+BEGIN_SRC emacs-lisp
+(when (eq system-type 'darwin) ;; Apply only on macOS
+  ;; Set font to a macOS-friendly font
+  (set-face-attribute 'default nil :font "Menlo" :height 140)
+
+  ;; Use Command key as Meta
+  (setq mac-command-modifier 'meta)
+  (setq mac-option-modifier 'none)
+
+  ;; Ensure correct system clipboard integration
+  (setq select-enable-clipboard t)
+  (setq select-enable-primary t)
+
+  ;; Make the shell use the correct PATH
+  (use-package exec-path-from-shell
+    :ensure t
+    :config
+    (when (memq window-system '(mac ns x))
+      (exec-path-from-shell-initialize)))
+
+  ;; Fix backspace and delete key issues
+  (normal-erase-is-backspace-mode 1)
+
+  ;; Enable smooth scrolling
+  (setq mac-mouse-wheel-smooth-scroll t)
+
+  ;; MacOS-native fullscreen toggle
+  (global-set-key (kbd "M-RET") 'toggle-frame-fullscreen))
+#+END_SRC
+
+** Startup Customization
+:PROPERTIES:
+:ID:       43571981-7768-402a-8b84-39f708ca8272
+:END:
+#+BEGIN_SRC emacs-lisp
+;; Disable startup message
+(setq inhibit-startup-message t)
+
+;; Set initial *scratch* buffer message
+(setq initial-scratch-message "Hello Andrew")
+#+END_SRC
+
+** Keyboard Shortcuts
+:PROPERTIES:
+:ID:       3bbd5bef-391d-46eb-baa8-d806fd5b37a7
+:END:
+#+BEGIN_SRC emacs-lisp
+;; Define macros shortcuts
+(global-set-key (kbd "C-c 1") 'kmacro-start-macro)
+(global-set-key (kbd "C-c 2") 'kmacro-end-macro)
+(global-set-key (kbd "C-c 3") 'kmacro-end-and-call-macro)
+
+;; Adjust text size with Ctrl-+ and Ctrl--
+(global-set-key (kbd "C-+") 'text-scale-increase)  
+(global-set-key (kbd "C--") 'text-scale-decrease)
+
+;; Bind Enter key to automatically indent
+(global-set-key (kbd "RET") 'newline-and-indent)
+#+END_SRC
+
+** Scrolling Behavior
+:PROPERTIES:
+:ID:       e3d10e98-8a3b-4928-8f1f-5fbdc5d6b35c
+:END:
+#+BEGIN_SRC emacs-lisp
+;; Configure scrolling
+(setq scroll-step 1) ;; Scroll one line at a time
+(setq scroll-margin 10)  ;; Keep 10 lines of margin while scrolling
+(setq scroll-conservatively 10000)
+(setq scroll-preserve-screen-position 10) ;; Preserve cursor position
+#+END_SRC
+
+** Text Editing Enhancements
+:PROPERTIES:
+:ID:       226a33be-8da2-499a-b2a1-5a14ffb5520c
+:END:
+#+BEGIN_SRC emacs-lisp
+;; Enable syntax highlighting
+(require 'font-lock)
+(global-font-lock-mode t)
+(setq font-lock-maximum-decoration t)
+
+;; Enable automatic pairing of parentheses and other delimiters
+(electric-pair-mode 1)
+
+;; Disable automatic indentation after pressing Enter
+(electric-indent-mode -1)
+
+;; Set indentation preferences
+(setq-default indent-tabs-mode nil) ;; Use spaces instead of tabs
+(setq-default tab-width 4)
+(setq-default c-basic-offset 4)
+(setq-default standard-indent 4)
+(setq-default lisp-body-indent 4)
+(setq lisp-indent-function 'common-lisp-indent-function)
+#+END_SRC
+
+** Text Wrapping and Visual Line Mode
+:PROPERTIES:
+:ID:       1b24eda1-6462-4b86-bb80-91fcdda07b97
+:END:
+#+BEGIN_SRC emacs-lisp
+;; Disable visual line mode globally
+(global-visual-line-mode -1)
+
+;; Enable word wrapping
+(setq word-wrap t)
+
+;; Disable automatic line breaking in Org mode
+(auto-fill-mode -1)
+(add-hook 'org-mode-hook (lambda () (auto-fill-mode -1)))
+#+END_SRC
+
+** Search and Highlighting
+:PROPERTIES:
+:ID:       c9022ff7-e4e4-4824-89be-fb4b3c5ee01a
+:END:
+#+BEGIN_SRC emacs-lisp
+;; Enable search highlights
+(setq search-highlight t)
+(setq query-replace-highlight t)
+
+;; Enable matching parentheses highlighting
+(show-paren-mode t)
+(setq show-paren-style 'expression)
+#+END_SRC
+
+** Default Input Method
+:PROPERTIES:
+:ID:       c5f95c4d-b156-4b81-b4a6-bdbbd3a160b9
+:END:
+#+BEGIN_SRC emacs-lisp
+;; Set default input method to Russian
+(setq default-input-method 'russian-computer)
+#+END_SRC
+
+** Server: Emacs-Client Mode
+:PROPERTIES:
+:ID:       b82c61b0-9021-4c49-ae85-3b038304f654
+:END:
+
+#+BEGIN_SRC emacs-lisp
+;; Enable emacs server for external editing
+(use-package edit-server
+  :ensure t
+  :config
+  (edit-server-start)
+  (setq edit-server-default-major-mode 'markdown-mode)
+  (setq edit-server-new-frame nil)
+  (with-eval-after-load 'markdown-mode
+    (setq markdown-fontify-code-blocks-natively t)))
+#+END_SRC

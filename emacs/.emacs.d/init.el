@@ -9,4 +9,7 @@
 (package-refresh-contents)
 (package-install 'use-package))
 
-(org-babel-load-file (expand-file-name "~/.emacs.d/emacs-config.org"))
+(org-babel-load-file (expand-file-name "~/.emacs.d/emacs-base-config.org"))
+(org-babel-load-file (expand-file-name "~/.emacs.d/emacs-navigation-config.org"))
+(org-babel-load-file (expand-file-name "~/.emacs.d/emacs-org-mode-config.org"))
+(org-babel-load-file (expand-file-name "~/.emacs.d/emacs-programming-config.org"))
