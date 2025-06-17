@@ -53,6 +53,36 @@
   (load-theme 'dracula t))
 #+END_SRC
 
+** Font (Fire Code)
+:PROPERTIES:
+:ID:       81b668ed-c630-4ade-9992-d042766c701c
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'default nil
+  :family "Fira Code"
+  :height 120
+  :weight 'normal)
+
+;; Optional: improve appearance in Org
+(set-face-attribute 'fixed-pitch nil :family "Fira Code")
+(set-face-attribute 'variable-pitch nil :family "Sans Serif")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC emacs-lisp
+(use-package ligature
+  :ensure t
+  :config
+  (ligature-set-ligatures 'prog-mode
+    '("www" "**" "***" "==" "!=" "===" "=>" "->" "<-" "<=>" "<=" ">=" "&&" "||" "::"))
+  (global-ligature-mode t))
+#+END_SRC
+
+#+RESULTS:
+: t
+
 ** macOS-Specific Settings
 :PROPERTIES:
 :ID:       697fe8ea-f595-4596-af9a-59933008b49a
