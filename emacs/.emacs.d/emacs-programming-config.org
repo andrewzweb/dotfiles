@@ -53,10 +53,11 @@
   :config
   (define-key lsp-mode-map [tab] 'lsp-tab-completion-or-next-field)
   ;; Point to the pylsp executable in your virtualenv
-  (setq lsp-python-ms-executable "~/.virtualenvs/3.11/bin/pylsp")
-  (setq lsp-python-executable-cmd "~/.virtualenvs/3.11/bin/python")
+  (setq lsp-python-ms-executable "~/.virtualenvs/3.10/bin/pylsp")
+  (setq lsp-pylsp-server-command '("~/.virtualenvs/3.10/bin/pylsp"))
+  (setq lsp-python-executable-cmd "~/.virtualenvs/3.10/bin/python")
   ;; Other lsp-mode configurations...
-  (setq lsp-disabled-clients '(pyls))
+  ;(setq lsp-disabled-clients '(semgrep))
 )
 
 (defun lsp-tab-completion-or-next-field ()
