@@ -1,4 +1,4 @@
-* Org
+* Org-Mode
 :PROPERTIES:
 :ID:       98bbe6a0-d083-482e-b8c3-02e614465a54
 :END:
@@ -24,16 +24,26 @@
    :END:
 
 #+BEGIN_SRC emacs-lisp
-;; Set default file associations for org-mode files
+;; Associate .org and .org_archive with org-mode
 (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\)$" . org-mode))
 
-(setq my-org-workspace "/home/andrew/workspace/org/")
+;; Disable automatic line breaking in Org mode
+(add-hook 'org-mode-hook (lambda () (auto-fill-mode -1)))
 
-(setq org-agenda-files (directory-files-recursively "/home/andrew/workspace/org/workspace/" "\\.org$"))
+(setq org-dir
+      (cond
+       ((eq system-type 'darwin) "/Users/andrew/org")
+       ((eq system-type 'gnu/linux) "/home/andrew/workspace/org")))
+
+;; Recursively find all .org files in org-dir
+(setq org-agenda-files
+      (directory-files-recursively org-dir "\\.org$"))
 #+END_SRC
 
 #+RESULTS:
-| /home/andrew/workspace/org/workspace/english.org | /home/andrew/workspace/org/workspace/inbox.org | /home/andrew/workspace/org/workspace/newtend.org | /home/andrew/workspace/org/workspace/proxy_ua.org | /home/andrew/workspace/org/workspace/rest.org | /home/andrew/workspace/org/workspace/workspace.org |
+| /home/andrew/workspace/org/work/market.org | /home/andrew/workspace/org/work/proxyzeus.org | /home/andrew/workspace/org/workspace/dairy.org | /home/andrew/workspace/org/workspace/english.org | /home/andrew/workspace/org/workspace/ideas_2025.org | /home/andrew/workspace/org/workspace/inbox.org | /home/andrew/workspace/org/workspace/newtend.org | /home/andrew/workspace/org/workspace/proxy_ua.org | /home/andrew/workspace/org/workspace/rest.org | /home/andrew/workspace/org/workspace/workspace.org | /home/andrew/workspace/org/books.org | /home/andrew/workspace/org/english.org | /home/andrew/workspace/org/homework.org | /home/andrew/workspace/org/self_dev.org | /home/andrew/workspace/org/workspace.org |
+
+
 
 ** ON org-theme pretty
 :PROPERTIES:
@@ -532,7 +542,7 @@
 :ID:       3d2289b4-9dea-4b6e-b23e-243a214657a5
 :END:
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC
 (use-package org-timeblock
   :ensure t
   :bind ("C-c s" . org-timeblock)
