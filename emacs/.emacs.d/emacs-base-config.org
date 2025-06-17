@@ -241,3 +241,40 @@
   (with-eval-after-load 'markdown-mode
     (setq markdown-fontify-code-blocks-natively t)))
 #+END_SRC
+
+** Doom-modeline
+:PROPERTIES:
+:ID:       56361aea-210d-4ce3-a92f-8694a5469191
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package doom-modeline
+  :ensure t
+  :init
+  (doom-modeline-mode 1)
+  :config
+  (setq doom-modeline-height 25)
+  (setq doom-modeline-bar-width 3)
+  (setq doom-modeline-icon t)
+  (setq doom-modeline-major-mode-icon t)
+  (setq doom-modeline-major-mode-color-icon t)
+  (setq doom-modeline-buffer-file-name-style 'truncate-upto-project))
+#+END_SRC
+
+#+RESULTS:
+: t
+
+** All the icons (for doom-modeline)
+:PROPERTIES:
+:ID:       6c931383-b746-4575-b404-f46e04ba0951
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package all-the-icons
+  :ensure t)
+
+(add-hook 'after-init-hook
+  (lambda ()
+    (set-fontset-font t 'symbol (font-spec :family "all-the-icons") nil 'append)))
+#+END_SRC
+
