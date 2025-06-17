@@ -18,6 +18,22 @@ DOTFILES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 BACKUP_DIR="$HOME/.dotfiles_backup_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$BACKUP_DIR"
 
+# Install oh-my-zsh and plugins
+install_oh_my_zsh() {
+    if [ ! -d "$HOME/.oh-my-zsh" ]; then
+        echo "📦 Installing oh-my-zsh..."
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+        
+        echo "📦 Installing zsh plugins..."
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+        git clone https://github.com/Powerlevel9k/powerlevel9k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel9k
+        
+        echo "✅ oh-my-zsh and plugins installed"
+    else
+        echo "✅ oh-my-zsh already installed"
+    fi
+}
+
 # Function to safely create symlinks
 link_file() {
     local src=$1
@@ -39,8 +55,18 @@ link_file() {
     ln -sf "$src" "$dst"
 }
 
+# Install oh-my-zsh and plugins
+install_oh_my_zsh
+
 # Main configurations
 echo "📁 Setting up dotfiles..."
+# Configure zsh plugins in .zshrc
+if [ -f "$DOTFILES_DIR/zsh/.zshrc" ]; then
+    echo "⚙️  Configuring zsh plugins..."
+    sed -i.bak 's/^plugins=(.*)/plugins=(git zsh-syntax-highlighting)/' "$DOTFILES_DIR/zsh/.zshrc"
+    sed -i.bak 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel9k\/powerlevel9k"/' "$DOTFILES_DIR/zsh/.zshrc"
+fi
+
 link_file "$DOTFILES_DIR/zsh/.zshrc" "$HOME/.zshrc"
 link_file "$DOTFILES_DIR/emacs/.emacs.d" "$HOME/.emacs.d"
 link_file "$DOTFILES_DIR/.bashrc" "$HOME/.bashrc"
