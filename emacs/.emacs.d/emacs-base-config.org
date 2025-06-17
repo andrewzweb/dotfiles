@@ -157,6 +157,8 @@
 (setq scroll-margin 10)  ;; Keep 10 lines of margin while scrolling
 (setq scroll-conservatively 10000)
 (setq scroll-preserve-screen-position 10) ;; Preserve cursor position
+
+(setq next-line-add-newlines    t) ;; Automatically add a new line at the end of the file
 #+END_SRC
 
 ** Text Editing Enhancements
