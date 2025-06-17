@@ -31,9 +31,7 @@
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode)
-  :config
-  (setq flycheck-indication-mode 'right-fringe))
+  :init (global-flycheck-mode))
 #+END_SRC
 
 *** Company-mode and LSP (server)
@@ -96,24 +94,20 @@
 
 #+BEGIN_SRC emacs-lisp
 ;; Optionally use lsp-ui for fancy UI integrations (popups for function signatures, peek, etc.)
-;; Optionally use lsp-ui for fancy UI integrations (popups for function signatures, peek, etc.)
 (use-package lsp-ui
   :ensure t
   :after lsp-mode
   :commands lsp-ui-mode
   :hook (lsp-mode . lsp-ui-mode)
-  :bind (("C-c d" . lsp-ui-doc-show)        ; Show doc window
-         ("C-c D" . lsp-ui-doc-hide)        ; Hide doc window
-         ("M-?" . lsp-ui-doc-glance)        ; Temporarily show doc
-         :map lsp-mode-map
-         ("C-c d" . lsp-ui-doc-show))       ; This line can be removed if already covered
-
+  :bind (("C-c d" . lsp-ui-doc-show)
+         ("C-c D" . lsp-ui-doc-hide)
+         ("M-?"   . lsp-ui-doc-glance))
   :config
   ;; Enable the documentation pop-up
   (setq lsp-ui-doc-enable t
-        ;; Don't show doc on cursor hover
+        ; Don't show doc on cursor hover
         lsp-ui-doc-show-with-cursor nil
-        ;; Show doc on mouse hover
+        ; Show doc on mouse hover
         lsp-ui-doc-show-with-mouse t
 
         ;; Position the documentation frame at point
@@ -131,7 +125,12 @@
         lsp-ui-doc-border "#c678dd"
         ;; Use a custom font for the documentation frame
         lsp-ui-doc-font '("Source Code Pro" . 12))
-
+    :bind
+    (:map lsp-ui-mode-map
+        ("C-c d" . lsp-ui-doc-show)        ; Show doc window
+        ("C-c D" . lsp-ui-doc-hide)        ; Hide doc window
+        ("M-?" . lsp-ui-doc-glance))      ; Temporarily show doc
+  
   ;; Customize the sideline diagnostics
   (setq lsp-ui-sideline-enable t
         lsp-ui-sideline-show-hover t
@@ -608,135 +607,4 @@ https://github.com/porterjamesj/virtualenvwrapper.el
 #+END_SRC
 
 
-* Calendar
-:PROPERTIES:
-:CREATED:  [2024-03-10 нд 14:41]
-:ID:       5b259933-82b4-48a4-b5fb-43a719e0303c
-:END:
-
-#+BEGIN_SRC emacs-lisp
-;; Docs -- https://github.com/kiwanami/emacs-calfw?tab=readme-ov-file#cfwmodel
-(use-package calfw
-  :ensure t
-  :config
-  (require 'calfw-org))
-
-(use-package calfw-org
-  :ensure t
-  :config
-  (setq cfw:org-overwrite-default-keybinding t)
-  (setq cfw:org-agenda-schedule-args '(:scheduled :deadline :timestamp))
-)
-
-;; First day of the week
-(setq calendar-week-start-day 1) ; 0:Sunday, 1:Monday
-
-;; set hight of day by default
-;(cfw:create-calendar-component-region :height 10)
-
-;; styles
-(custom-set-faces
- '(cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
- '(cfw:face-header ((t (:foreground "#d0bf8f" :weight bold))))
- '(cfw:face-sunday ((t :foreground "#cc9393" :background "grey10" :weight bold)))
- '(cfw:face-saturday ((t :foreground "#8cd0d3" :background "grey10" :weight bold)))
- '(cfw:face-holiday ((t :background "grey10" :foreground "#8c5353" :weight bold)))
- '(cfw:face-grid ((t :foreground "DarkGrey")))
- '(cfw:face-default-content ((t :foreground "#bfebbf")))
- '(cfw:face-periods ((t :foreground "cyan")))
- '(cfw:face-day-title ((t :background "grey10")))
- '(cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
- '(cfw:face-annotation ((t :foreground "RosyBrown" :inherit cfw:face-day-title)))
- '(cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
- '(cfw:face-today-title ((t :background "#7f9f7f" :weight bold)))
- '(cfw:face-today ((t :background: "grey10" :weight bold)))
- '(cfw:face-select ((t :background "#2f2f2f")))
- '(cfw:face-toolbar ((t :foreground "Steelblue4" :background "Steelblue4")))
- '(cfw:face-toolbar-button-off ((t :foreground "Gray10" :weight bold)))
- '(cfw:face-toolbar-button-on ((t :foreground "Gray50" :weight bold))))
-
-(defun my-open-calendar ()
-  "Open the calendar view with org-agenda."
-  (cfw:open-org-calendar))
-
-;; open calendar
-(defun toggle-calendar ()
-  "Toggle the calendar window."
-  (if (get-buffer "*cfw-calendar*")
-      (kill-buffer "*cfw-calendar*")
-    (my-open-calendar)))
-
-(global-set-key (kbd "C-c t") 'toggle-calendar)  ; Add another keybinding to toggle
-#+END_SRC
-
-
-* Org-timeblock
-:PROPERTIES:
-:ID:       3d2289b4-9dea-4b6e-b23e-243a214657a5
-:END:
-
-#+BEGIN_SRC emacs-lisp
-(use-package org-timeblock
-  :ensure t
-  :bind ("C-c s" . org-timeblock)
-  :config
-  (setq org-timeblock-files (directory-files-recursively "/home/andrew/workspace/org/workspace/" "\\.org$"))
-  (setq org-timeblock-inbox-file "/home/andrew/workspace/org/workspace/inbox.org")
-)
-
-(setq org-tag-faces
-      '(("english" . (:foreground "#FFB6C1" :weight bold)) ; Soft pink
-        ("newtend" . (:foreground "#90EE90" :weight bold)) ; Light green
-        ("proxyua" . (:foreground "#00FA9A" :weight bold)))) ; Green with aqua (Medium Spring Green)
-#+END_SRC
-
-#+RESULTS:
-| english | :foreground | #FFB6C1 | :weight | bold |
-| newtend | :foreground | #90EE90 | :weight | bold |
-| proxyua | :foreground | #00FA9A | :weight | bold |
-
-
-
-
-#+RESULTS:
-: vertico-directory-delete-word
-
-* Doom-modeline
-:PROPERTIES:
-:ID:       56361aea-210d-4ce3-a92f-8694a5469191
-:END:
-
-#+BEGIN_SRC emacs-lisp
-(use-package doom-modeline
-  :ensure t
-  :init
-  (doom-modeline-mode 1)
-  :config
-  (setq doom-modeline-height 25)
-  (setq doom-modeline-bar-width 3)
-  (setq doom-modeline-icon t)
-  (setq doom-modeline-major-mode-icon t)
-  (setq doom-modeline-major-mode-color-icon t)
-  (setq doom-modeline-buffer-file-name-style 'truncate-upto-project))
-#+END_SRC
-
-#+RESULTS:
-: t
-
-* All the icons
-:PROPERTIES:
-:ID:       6c931383-b746-4575-b404-f46e04ba0951
-:END:
-
-#+BEGIN_SRC emacs-lisp
-(use-package all-the-icons
-  :ensure t)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(global-font-lock-mode 1)
-#+END_SRC
-
-#+RESULTS:
-: t
 
