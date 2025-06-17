@@ -36,6 +36,9 @@
 ;; Disable backup and auto-save files
 (setq backup-inhibited t)
 (setq auto-save-default nil)
+
+;; Turn off ring bell
+(setq ring-bell-function 'ignore)
 #+END_SRC
 
 ** Theme
