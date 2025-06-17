@@ -3,7 +3,7 @@
 :ID:       98bbe6a0-d083-482e-b8c3-02e614465a54
 :END:
 
-** ON org-init
+** org-init
    :PROPERTIES:
    :ID: d8debe44-8997-48e6-af02-47de3be207fe
    :END:
@@ -15,10 +15,7 @@
 
 #+END_SRC
 
-#+RESULTS:
-: /home/andrew/workspace/org/
-
-** ON Org Files and
+** Org Files and
    :PROPERTIES:
    :ID: 6ed4d139-0420-4e09-acfb-95bb938be86d
    :END:
@@ -88,7 +85,7 @@
 
 #+RESULTS:
 
-** ON Custom Agenda views
+** Custom Agenda views
 :PROPERTIES:
 :ID:       9a602078-bdff-4044-9da2-03c1601a5a20
 :END:
@@ -106,7 +103,7 @@
 #+RESULTS:
 | d | Custom Day Overview | ((agenda  ((org-agenda-span 'day) (org-agenda-include-diary t) (org-agenda-show-log t) (org-agenda-prefix-format '((agenda .  %i %-12:c%?-12t% s %e ))) (org-agenda-time-grid '((daily today) (600 800 1000 1200 1400 1600 1800 2000 2200) ...... ----------------))))) |
 
-** ON Todo Keywords
+** Todo Keywords
    :PROPERTIES:
    :ID: 22fa63d3-9cf3-4025-b9a5-13b58b30bcc6
    :END:
@@ -130,7 +127,7 @@
 | DONE   | :foreground | green  | :weight | bold |
 | CANCEL | :foreground | blue   | :weight | bold |
 
-** ON Org Tags
+** Org Tags
    :PROPERTIES:
    :ID: 92dcb754-3904-4b71-b403-401580a7a359
    :END:
@@ -147,7 +144,7 @@
                       ("laptop" . ?l) ("book" . ?b) ("video" . ?v)))
 #+END_SRC
 
-** ON Org Capture
+** Org Capture
    :PROPERTIES:
    :ID: 51173503-66a0-4cd4-b196-c00d26d26182
    :END:
@@ -183,7 +180,7 @@
 (setq org-use-speed-commands t)
 #+END_SRC
 
-** ON Org Agenda
+** Org Agenda
    :PROPERTIES:
    :ID: 98def581-d254-4608-8b66-dec9111dbd25
    :END:
@@ -230,7 +227,7 @@
                              "   " "..............."))
 #+END_SRC
 
-** ON org-bullets
+** org-bullets
    :PROPERTIES:
    :ID: e5387b92-7a46-4e1d-b5b6-f311259a0b63
    :END:
@@ -250,7 +247,7 @@
 #+RESULTS:
 | #[0 \301\211\207 [imenu-create-index-function org-imenu-get-tree] 2] | (lambda nil (add-hook 'before-save-hook 'my-org-add-ids-to-headlines-in-file nil 'local)) | org-clock-load | org-bullets-mode | my-org-mode-visual-tweaks | (lambda nil (auto-fill-mode -1)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes |
 
-** ON Time
+** Time
    :PROPERTIES:
    :ID: 440bcbf2-9b13-43b6-a7ea-ff4625653941
    :END:
@@ -346,7 +343,7 @@
               (org-set-created-property))))
 #+END_SRC
 
-** ON org-id
+** org-id
    :PROPERTIES:
    :ID: 0222f813-8fc0-4abd-98e7-b9f2482f5dee
    :END:
@@ -365,7 +362,7 @@
 (add-hook 'org-capture-prepare-finalize-hook 'org-id-get-create)
 #+END_SRC
 
-** ON org-column-default-view
+** org-column-default-view
    :PROPERTIES:
    :ID: 742f15a3-d2cf-4a03-9d1c-6397d63fd2ab
    :END:
@@ -378,7 +375,7 @@
 (setq org-columns-default-format "%50ITEM(Task) %2PRIORITY %10Effort(Effort){:} %10CLOCKSUM")
 #+END_SRC
 
-** ON Source Code
+** Source Code
    :PROPERTIES:
    :ID: 0f37b38b-247f-4e5d-8eb5-098399788749
    :END:
@@ -468,7 +465,7 @@
 (setq org-insert-structure-template t)
 #+END_SRC
 
-** ON Estimate
+** Estimate
    :PROPERTIES:
    :ID: 1851e1e4-a28c-46c1-83cf-6d8a256564fe
    :END:
@@ -500,7 +497,7 @@
 #+RESULTS:
 : t
 
-** OFF ledger-mode
+** ledger-mode
    :PROPERTIES:
    :ID: 285fcee6-1b50-4fd2-8c88-0b755b6420cf
    :END:
@@ -528,4 +525,85 @@
 (add-to-list 'auto-mode-alist '("\\.ledger$" . ledger-mode))
 (add-to-list 'auto-mode-alist '("\\.dat$" . ledger-mode))
 (provide 'init-ledger)
+#+END_SRC
+
+** Org-timeblock
+:PROPERTIES:
+:ID:       3d2289b4-9dea-4b6e-b23e-243a214657a5
+:END:
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-timeblock
+  :ensure t
+  :bind ("C-c s" . org-timeblock)
+  :config
+  (let ((org-dir (getenv "ORG_WORKSPACE_PATH")))
+    (setq org-timeblock-files (directory-files-recursively org-dir "\\.org$"))
+    (setq org-timeblock-inbox-file (expand-file-name "inbox.org" org-dir))))
+
+(setq org-tag-faces
+      '(("english" . (:foreground "#FFB6C1" :weight bold)) ; Soft pink
+        ("newtend" . (:foreground "#90EE90" :weight bold)) ; Light green
+        ("proxyua" . (:foreground "#00FA9A" :weight bold)))) ; Green with aqua (Medium Spring Green)
+#+END_SRC
+
+** Calendar (calfw)
+:PROPERTIES:
+:CREATED:  [2024-03-10 нд 14:41]
+:ID:       5b259933-82b4-48a4-b5fb-43a719e0303c
+:END:
+
+#+BEGIN_SRC emacs-lisp
+;; Docs -- https://github.com/kiwanami/emacs-calfw?tab=readme-ov-file#cfwmodel
+(use-package calfw
+  :ensure t
+  :config
+  (require 'calfw-org))
+
+(use-package calfw-org
+  :ensure t
+  :config
+  (setq cfw:org-overwrite-default-keybinding t)
+  (setq cfw:org-agenda-schedule-args '(:scheduled :deadline :timestamp))
+)
+
+;; First day of the week
+(setq calendar-week-start-day 1) ; 0:Sunday, 1:Monday
+
+;; set hight of day by default
+;(cfw:create-calendar-component-region :height 10)
+
+;; styles
+(custom-set-faces
+ '(cfw:face-title ((t (:foreground "#f0dfaf" :weight bold :height 2.0 :inherit variable-pitch))))
+ '(cfw:face-header ((t (:foreground "#d0bf8f" :weight bold))))
+ '(cfw:face-sunday ((t :foreground "#cc9393" :background "grey10" :weight bold)))
+ '(cfw:face-saturday ((t :foreground "#8cd0d3" :background "grey10" :weight bold)))
+ '(cfw:face-holiday ((t :background "grey10" :foreground "#8c5353" :weight bold)))
+ '(cfw:face-grid ((t :foreground "DarkGrey")))
+ '(cfw:face-default-content ((t :foreground "#bfebbf")))
+ '(cfw:face-periods ((t :foreground "cyan")))
+ '(cfw:face-day-title ((t :background "grey10")))
+ '(cfw:face-default-day ((t :weight bold :inherit cfw:face-day-title)))
+ '(cfw:face-annotation ((t :foreground "RosyBrown" :inherit cfw:face-day-title)))
+ '(cfw:face-disable ((t :foreground "DarkGray" :inherit cfw:face-day-title)))
+ '(cfw:face-today-title ((t :background "#7f9f7f" :weight bold)))
+ '(cfw:face-today ((t :background: "grey10" :weight bold)))
+ '(cfw:face-select ((t :background "#2f2f2f")))
+ '(cfw:face-toolbar ((t :foreground "Steelblue4" :background "Steelblue4")))
+ '(cfw:face-toolbar-button-off ((t :foreground "Gray10" :weight bold)))
+ '(cfw:face-toolbar-button-on ((t :foreground "Gray50" :weight bold))))
+
+(defun my-open-calendar ()
+  "Open the calendar view with org-agenda."
+  (cfw:open-org-calendar))
+
+;; open calendar
+(defun toggle-calendar ()
+  "Toggle the calendar window."
+  (if (get-buffer "*cfw-calendar*")
+      (kill-buffer "*cfw-calendar*")
+    (my-open-calendar)))
+
+(global-set-key (kbd "C-c t") 'toggle-calendar)  ; Add another keybinding to toggle
 #+END_SRC
