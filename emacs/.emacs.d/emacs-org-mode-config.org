@@ -32,7 +32,7 @@
 
 (setq org-dir
       (cond
-       ((eq system-type 'darwin) "/Users/andrew/org")
+       ((eq system-type 'darwin) "/Users/andrew/workspace/org")
        ((eq system-type 'gnu/linux) "/home/andrew/workspace/org")))
 
 ;; Recursively find all .org files in org-dir
